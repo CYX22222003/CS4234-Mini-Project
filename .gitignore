@@ -1,0 +1,28 @@
+/build/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+/main.pdf
+
+# AI agent instructions
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+
+# Agent-specific directories
+.claude/
+.codex/
+.gemini/
+.cursor/
+
+# Agent-generated documents
+agent_docs/
+.agent/
