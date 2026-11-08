@@ -1,0 +1,159 @@
+
+\documentclass[11pt,a4paper,onecolumn]{article}
+
+% ============================================================
+% Page Layout and Typography
+% ============================================================
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ============================================================
+% Mathematics
+% ============================================================
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+
+% ============================================================
+% Algorithms and Pseudocode
+% ============================================================
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% ============================================================
+% Figures and Tables
+% ============================================================
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+
+% ============================================================
+% Lists and Formatting
+% ============================================================
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+% ============================================================
+% References and Hyperlinks
+% ============================================================
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+% ============================================================
+% Theorem Environments
+% ============================================================
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{observation}[theorem]{Observation}
+
+% ============================================================
+% Bin Packing Notation
+% ============================================================
+\newcommand{\eps}{\varepsilon}
+\newcommand{\I}{\mathcal{I}}
+
+\DeclareMathOperator{\OPT}{OPT}
+\DeclareMathOperator{\ALG}{ALG}
+\DeclareMathOperator{\SIZE}{SIZE}
+
+% Common number sets
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+% ============================================================
+% Title Information
+% ============================================================
+\title{
+    \textbf{CS4234 Mini-Project: Approximation Algorithms for Bin Packing}
+}
+
+\author{
+    Author 1 \and
+    Author 2 \and
+    Author 3 \and
+    Author 4
+}
+
+\date{November 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\begin{definition}[Bin Packing]
+Given an instance $\I = \{a_1,\ldots,a_n\}$,
+where $a_i \in (0,1]$, the bin packing problem
+asks for a partition of the items into the minimum
+number of bins such that the total size of items
+in each bin is at most $1$.
+\end{definition}
+
+\begin{theorem}
+For every $\eps > 0$, there exists an algorithm
+with an asymptotic approximation guarantee
+of $1+\eps$ for the bin packing problem.
+\end{theorem}
+
+\begin{proof}
+The proof proceeds by ...
+\end{proof}
+
+
+\section{Preliminaries}
+
+\section{The de la Vega--Lueker Algorithm}
+\cite{fernandezdelavegaBinPackingCan1981}
+
+\section{The Karmarkar--Karp Algorithm}
+\cite{karmarkarEfficientApproximationScheme1982}
+
+\section{Conclusion}
+
+% ============================================================
+% References
+% ============================================================
+\bibliographystyle{plainnat}
+\bibliography{reference}
+
+% ============================================================
+% Appendix (outside the main-body page limit)
+% ============================================================
+\appendix
+
+\section{Supplementary Proofs}
+
+% ============================================================
+% AI Disclosure (outside the 10-page limit)
+% ============================================================
+\section*{AI Disclosure}
+
+% Describe how AI tools were used in this project.
+
+\end{document}
