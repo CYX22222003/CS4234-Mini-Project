@@ -1,0 +1,51 @@
+Both papers introduce a partial order $\preceq$ on
+bin packing instances. Given two instances
+$I=\{a_1,\ldots,a_n\}$ and $J=\{b_1,\ldots,b_m\}$, we write $I\preceq J$ if there exists an injective mapping
+$$
+    f:\{1,\ldots,n\}\rightarrow\{1,\ldots,m\}
+$$
+such that
+$$
+    a_i\leq b_{f(i)},\qquad
+    \forall i\in\{1,\ldots,n\}.
+$$
+In other words, every item in $I$ can be matched
+to a distinct item in $J$ of at least the same size.
+
+Given the definition of the $\preceq$, we can obtain following lemmas
+
+
+\begin{lemma}[Monotonicity of Optimal Packing]
+\label{lem:monotonicity}
+Let $I=\{a_1,\ldots,a_n\}$ and
+$J=\{b_1,\ldots,b_m\}$ be two bin packing
+instances. If $I\preceq J$, then
+\[
+    \OPT(I)\leq\OPT(J).
+\]
+\end{lemma}
+
+\begin{proof}
+By the definition of $I\preceq J$, there exists
+an injective mapping
+$f:\{1,\ldots,n\}\to\{1,\ldots,m\}$
+such that $a_i\leq b_{f(i)}$ for every
+$i\in\{1,\ldots,n\}$.
+
+Consider an optimal packing of $J$ using
+$\OPT(J)$ bins. For each item $a_i\in I$,
+replace the corresponding item $b_{f(i)}$
+with $a_i$, and remove all unmatched items
+from $J$.
+
+Since $a_i\leq b_{f(i)}$, the total size
+of items in each bin cannot increase.
+Hence, the resulting packing of $I$ is
+feasible and uses at most $\OPT(J)$ bins.
+
+Therefore,
+\[
+    \OPT(I)\leq\OPT(J).
+\]
+\end{proof}
+

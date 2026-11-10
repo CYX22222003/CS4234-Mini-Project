@@ -1,0 +1,67 @@
+
+\section{Counting Feasible Bin Configurations}
+\label{app:bounded-config}
+
+We provide an illustrative interpretation of
+the counting argument in
+\Cref{lem:bounded-config}.
+
+Consider the equation
+\[
+    c_1+c_2+\cdots+c_m+c_R=k,
+\]
+where all variables are non-negative integers.
+
+This can be interpreted as distributing $k$
+identical balls among $m+1$ distinguishable
+bins. The first $m$ bins represent the distinct
+item sizes, while the last bin represents
+unused item slots.
+
+Equivalently, we arrange $k$ identical balls
+and $m$ dividers in a row. Each arrangement
+uniquely determines a non-negative integer
+solution to the equation.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=0.85]
+
+        % Seven identical balls
+        \foreach \x in {0,0.5,1.7,2.9,3.4,3.9,5.1} {
+            \filldraw[fill=blue!25, draw=blue!70!black]
+                (\x,0) circle (0.15);
+        }
+
+        % Three dividers
+        \foreach \x in {1.1,2.3,4.5} {
+            \draw[thick] (\x,-0.35) -- (\x,0.35);
+        }
+
+        % Labels for each category
+        \node[below] at (0.25,-0.5) {$c_1=2$};
+        \node[below] at (1.7,-0.5) {$c_2=1$};
+        \node[below] at (3.4,-0.5) {$c_3=3$};
+        \node[below] at (5.1,-0.5) {$c_R=1$};
+
+    \end{tikzpicture}
+    \caption{Stars-and-bars representation with
+    $k=7$ balls and $m=3$ dividers.}
+    \label{fig:stars-bars}
+\end{figure}
+
+As illustrated in \Cref{fig:stars-bars},
+each arrangement corresponds to a possible
+configuration of item counts.
+
+There are $k+m$ positions, from which we
+choose $m$ positions for the dividers.
+Hence, the number of arrangements is
+\[
+    \binom{k+m}{m}.
+\]
+
+Not every arrangement necessarily satisfies
+the bin-capacity constraint. Therefore, this
+count provides an upper bound on the number
+of feasible configurations.

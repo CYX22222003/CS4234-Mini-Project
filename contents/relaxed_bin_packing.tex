@@ -1,0 +1,246 @@
+
+\subsubsection{Bin Configurations}
+\label{subsec:bp-binconfig}
+
+The configuration-based formulation provides a common
+starting point for the approximation techniques developed
+by both de la Vega--Lueker and Karmarkar--Karp.
+
+A \textbf{bin configuration} describes the composition
+of a single bin, specifying the number of items of
+each distinct size packed into it. It can also be
+viewed as a multiset of item sizes whose total size
+does not exceed the unit capacity. Two configurations
+are considered identical if they contain the same
+number of items of each distinct size.
+
+In the general Bin Packing problem, the number of
+possible configurations can grow exponentially with
+the number of items. This is because each configuration
+corresponds to a non-empty sub-multiset of the input
+items, although not every sub-multiset is necessarily
+feasible. Therefore, the total number of feasible
+configurations is at most $2^n-1$, where $n$ is the
+number of input items.
+
+
+\subsubsection{Integer Linear Programming Formulation}
+\label{subsubsec:bp-ilp}
+
+Consider a Bin Packing instance $I$ containing $n$
+items of $m$ distinct sizes $y_1,\ldots,y_m$, with
+$n_j$ items of size $y_j$. Let $\mathcal{C}=\{C_1,\ldots,C_q\}$ denote the
+set of all feasible non-empty bin configurations. For each configuration $C_i$, let $c_{ij}$
+denote the number of items of size $y_j$
+contained in that configuration. By feasibility,
+$\sum_{j=1}^{m} c_{ij}y_j \leq 1,\, \forall i\in\{1,\ldots,q\}.$ 
+We represent a packing by a vector
+$\mathbf{a}=(a_1,\ldots,a_q)$, where $a_i$
+denotes the number of bins assigned to
+configuration $C_i$.
+
+The Bin Packing problem can then be formulated
+as the following Integer Linear Program (ILP):
+
+\begin{equation}
+\label{eq:bp-ilp}
+\begin{aligned}
+    \min_{\mathbf{a}} \quad
+        & \sum_{i=1}^{q} a_i \\[4pt]
+    \text{subject to} \quad
+        & \sum_{i=1}^{q} a_i c_{ij} \geq n_j,
+          && \forall j\in\{1,\ldots,m\},\\
+        & a_i \in \mathbb{Z}_{\geq 0},
+          && \forall i\in\{1,\ldots,q\}.
+\end{aligned}
+\end{equation}
+
+The objective minimizes the total number of
+bins used. For each item size $y_j$, the
+corresponding constraint ensures that the
+selected configurations provide sufficient
+capacity to accommodate all $n_j$ items of
+that size.
+
+Each feasible integer vector
+$\mathbf{a}=(a_1,\ldots,a_q)$ corresponds to
+a feasible packing of $I$, where $a_i$ bins
+are assigned to configuration $C_i$.
+Any excess item slots can be left unused.
+
+For a feasible solution produced by an algorithm,
+we denote the number of bins used as
+$
+    \ALG(I)=\sum_{i=1}^{q}a_i.
+$
+Thus, minimizing the ILP objective is equivalent
+to minimizing the number of bins required to pack
+$I$, and its optimal value is $\OPT(I)$.
+
+However, as discussed previously in 
+\Cref{subsec:bp-binconfig}, the number of
+feasible configurations $q$ can be exponential
+in $n$. Consequently, even constructing the
+complete ILP may require exponentially many
+variables.
+
+This motivates considering a restricted version
+of Bin Packing in which the number of feasible
+configurations can be bounded more tightly.
+
+
+\subsubsection{Restricted Bin Packing: Bounded Configurations}
+\label{subsubsec:bounded-config}
+
+Consider a restricted Bin Packing instance in which
+every item has size at least $\varepsilon>0$.
+Since each bin has unit capacity, it can contain
+at most $k=\lfloor 1/\varepsilon\rfloor$ items.
+
+Under this restriction, the number of feasible
+configurations can be bounded in terms of $k$
+and the number of distinct item sizes $m$.
+
+\begin{lemma}
+\label{lem:bounded-config}
+For any Bin Packing instance with $m$ distinct
+item sizes, each at least $\varepsilon>0$,
+the number of non-empty feasible bin configurations
+$q$ satisfies
+$
+    q\leq \binom{k+m}{m}-1,
+    \qquad k=\lfloor 1/\varepsilon\rfloor.
+$
+\end{lemma}
+
+\begin{proof}
+Let $c_j$ denote the number of items of size
+$y_j$ in a configuration. Since each bin contains
+at most $k$ items,
+$
+    \sum_{j=1}^{m}c_j\leq k,
+    \, c_j\in\mathbb{Z}_{\geq 0}.
+$
+
+Introducing a slack variable $c_R\geq 0$ gives
+$
+    \sum_{j=1}^{m}c_j+c_R=k.
+$
+
+By the stars-and-bars formula, this equation
+has $\binom{k+m}{m}$ non-negative integer
+solutions. Excluding the empty configuration
+and configurations violating the capacity
+constraint yields the desired bound.
+\end{proof}
+
+A detailed combinatorial illustration of this
+counting argument is provided in
+\Cref{app:bounded-config}.
+
+Consequently, for fixed $k$ and $m$, the
+configuration ILP in \Cref{subsubsec:bp-ilp}
+contains a bounded number of variables,
+independent of the total number of items $n$.
+
+
+\subsubsection{Linear Programming Relaxation}
+
+Although restricting the number of configurations
+reduces the size of the ILP formulation, solving
+the resulting integer program optimally remains
+computationally challenging.
+
+A natural approach is to relax the integrality
+constraints $a_i \in \mathbb{Z}_{\geq 0}$ to
+$a_i \geq 0$, obtaining a Linear Programming
+(LP) relaxation.
+
+Both de la Vega--Lueker and Karmarkar--Karp
+exploit configuration-based formulations and
+LP relaxations, but they employ rounding techniques to
+construct feasible integral packings from the relaxed 
+LP solution
+
+In the following sections, we examine their
+respective techniques and analyze their
+approximation guarantees and running-time
+complexities.
+
+
+\paragraph{De La Vega--Lueker's Approach}
+
+Let $\mathbf{a}^*=(a_1^*,\ldots,a_q^*)$ be an optimal
+basic feasible solution to the LP relaxation, with
+objective value
+\[
+    LIN(I)=\sum_{i=1}^{q}a_i^*.
+\]
+
+Since the LP has $m$ covering constraints, any
+basic feasible solution has at most $m$ non-zero
+variables. This property allows us to construct
+an integral solution by rounding up each variable,
+while introducing at most $m$ additional bins.
+
+\textbf{Rounding up the LP solution.}
+We construct an integer vector
+$\hat{\mathbf{a}}=(\hat{a}_1,\ldots,\hat{a}_q)$
+by setting
+\[
+    \hat{a}_i=\lceil a_i^*\rceil,
+    \qquad \forall i\in\{1,\ldots,q\}.
+\]
+
+Since $\hat{a}_i\geq a_i^*$ for every $i$,
+the rounded solution continues to satisfy all
+covering constraints:
+\[
+    \sum_{i=1}^{q}\hat{a}_i c_{ij}
+    \geq
+    \sum_{i=1}^{q}a_i^*c_{ij}
+    \geq n_j,
+    \qquad \forall j\in\{1,\ldots,m\}.
+\]
+
+Hence, $\hat{\mathbf{a}}$ is a feasible integer
+solution to the ILP. Moreover, each non-zero
+variable increases by less than one during
+rounding. Since there are at most $m$ such
+variables, the total number of bins increases
+by at most $m$.
+
+
+\textbf{Greedy Deflation.}
+Although the rounded solution satisfies the
+covering constraints, it may contain more items
+of a particular size than required.
+
+We therefore perform a \textbf{deflation}
+procedure that removes excess items by replacing
+selected configurations with smaller feasible
+configurations.
+
+Since removing items preserves bin feasibility
+and does not introduce additional bins, the
+procedure produces a valid packing without
+increasing the objective value.
+
+A detailed batch-deflation algorithm, together
+with an illustrative example and correctness
+argument, is provided in
+\Cref{app:greedy-deflation}.
+
+We now establish the approximation guarantee of
+the rounding and deflation procedure.
+
+By rounding up each of the $q$ LP variables,
+the number of bins increases by at most $q$.
+Since deflation does not introduce additional
+bins, we obtain
+\[
+    \ALG(I)\leq\LIN(I)+q
+    \leq\OPT(I)+q.
+\]
+
+\paragraph{Karmarkar--Karp's approach}

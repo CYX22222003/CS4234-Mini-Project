@@ -1,0 +1,150 @@
+
+\section{Greedy Deflation Algorithm}
+\label{app:greedy-deflation}
+
+We describe a greedy deflation procedure for
+converting an integer solution satisfying the
+covering constraints into a packing containing
+exactly the required items.
+
+Let $\mathbf{b}=\hat{\mathbf{a}}$ denote the
+configuration multiplicities after rounding.
+For each configuration
+$C_i=(c_{i1},\ldots,c_{im})$, define
+$C_i^{(j\leftarrow x)}$ as the configuration
+obtained by replacing only its $j$-th
+coordinate with $x$.
+
+\paragraph{Algorithm.}
+For each item type $j=1,\ldots,m$:
+
+\begin{enumerate}
+    \item Compute the number of excess items:
+    \[
+        e_j=\sum_{i=1}^{q}b_i c_{ij}-n_j.
+    \]
+
+    \item While $e_j>0$, choose a configuration
+    $C_i$ satisfying $b_i>0$ and $c_{ij}>0$.
+
+    Let $t=c_{ij}$. Compute
+    \[
+    \begin{aligned}
+        d &= \min\{e_j,b_i t\},\\
+        k &= \left\lfloor\frac{d}{t}\right\rfloor,\\
+        r &= d\bmod t.
+    \end{aligned}
+    \]
+
+    Replace $k$ bins of configuration $C_i$
+    with $C_i^{(j\leftarrow 0)}$.
+
+    If $r>0$, replace one additional bin
+    with $C_i^{(j\leftarrow t-r)}$.
+
+    Update the corresponding multiplicities
+    in $\mathbf{b}$ and set
+    \[
+        e_j\leftarrow e_j-d.
+    \]
+
+    Discard any empty bins.
+\end{enumerate}
+
+The algorithm processes excess items in batches
+rather than examining individual bins.
+
+
+\paragraph{Illustrative Example.}
+
+Suppose the item sizes are
+$y_1=0.1$ and $y_2=0.2$.
+The rounded solution contains 5 bins of
+configuration $(3,2)$, whereas the instance
+requires $n_1=8$ and $n_2=7$ items.
+
+Initially, the selected configurations contain
+\[
+    5(3,2)=(15,10).
+\]
+
+For the first item type, the excess is
+$e_1=15-8=7$. We obtain
+\[
+    d=7,\qquad k=2,\qquad r=1.
+\]
+
+Hence, two bins are deflated to $(0,2)$
+and one bin to $(2,2)$:
+\[
+    5(3,2)
+    \longrightarrow
+    2(3,2)+2(0,2)+(2,2).
+\]
+
+The resulting configurations contain
+exactly eight items of the first type,
+but ten items of the second type.
+
+For the second item type, $e_2=3$.
+Selecting the two bins of configuration
+$(0,2)$ gives
+\[
+    d=3,\qquad k=1,\qquad r=1.
+\]
+
+One bin becomes empty and is discarded,
+while the other is deflated to $(0,1)$:
+\[
+    2(3,2)+2(0,2)+(2,2)
+    \longrightarrow
+    2(3,2)+(2,2)+(0,1).
+\]
+
+The resulting packing contains exactly
+\[
+    2(3,2)+(2,2)+(0,1)=(8,7),
+\]
+using only four bins.
+
+% Insert a TikZ illustration of the
+% configuration transformations here.
+
+
+\paragraph{Correctness.}
+For each item type $j$, the covering constraints
+guarantee that at least $n_j$ items are available.
+Thus, the algorithm can remove exactly $e_j$
+excess items.
+
+By definition, the deflation transformation
+$C_i^{(j\leftarrow x)}$ modifies only the
+$j$-th coordinate of configuration $C_i$,
+leaving all other coordinates unchanged.
+Consequently, for every item type $\ell\neq j$,
+the total number of type-$\ell$ items remains
+unchanged. In particular, the equality constraints
+established for previously processed item types
+are preserved.
+
+Furthermore, since deflation only removes items
+from existing bins, it preserves bin feasibility
+without increasing the number of bins.
+
+
+
+\paragraph{Running Time.}
+For each of the $m$ item types, the algorithm
+processes at most $q$ configurations.
+Each configuration is processed using a
+constant number of arithmetic operations,
+assuming configuration transitions can be
+located in constant time.
+
+Therefore, deflation requires
+\[
+    O(mq)
+\]
+arithmetic operations, excluding the
+preprocessing required to index configurations.
+

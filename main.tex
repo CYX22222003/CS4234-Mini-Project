@@ -79,7 +79,7 @@
 \DeclareMathOperator{\OPT}{OPT}
 \DeclareMathOperator{\ALG}{ALG}
 \DeclareMathOperator{\SIZE}{SIZE}
-
+\DeclareMathOperator{\LIN}{LIN}
 % Common number sets
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\N}{\mathbb{N}}
@@ -88,35 +88,83 @@
 % ============================================================
 % Title Information
 % ============================================================
-\title{
-    \textbf{CS4234 Mini-Project: Approximation Algorithms for Bin Packing}
-}
 
-\author{
-    Author 1 \and
-    Author 2 \and
-    Author 3 \and
-    Author 4
-}
+% \author{
+%     Author 1 \and
+%     Author 2 \and
+%     Author 3 \and
+%     Author 4
+% }
 
-\date{November 2026}
-
+% \date{November 2026}
+% \usepackage{setspace}
+% \onehalfspacing
+\everymath{\displaystyle}
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+    \centering
+
+    \vspace*{3cm}
+
+    {\Large\bfseries
+    CS4234 Mini-Project\\[0.5cm]
+    Approximation Algorithms for Bin Packing
+    \par}
+
+    \vspace{2cm}
+
+    {\large
+    National University of Singapore\\
+    School of Computing
+    \par}
+
+    \vspace{2cm}
+
+    {\normalsize
+    Oh Chundai, Daron\\
+    Wang Xiyu\\
+    Xu Zhehao\\
+    Chen Yixun
+    \par}
+
+    \vfill
+
+    {\normalsize November 2026\par}
+
+\end{titlepage}
+
 
 \section{Introduction}
 
-The \textbf{Bin Packing Problem} is a classical combinatorial optimization problem with applications in resource allocation, scheduling, and storage management. Given a collection of items with sizes \(s_1,s_2,\ldots,s_n\in(0,1]\), the objective is to partition them into the minimum number of bins, each having unit capacity. Although the problem has a simple formulation, finding an optimal packing is NP-hard. This motivates the study of efficient approximation algorithms that produce solutions close to the optimum.
+The \textbf{Bin Packing Problem} is a classical combinatorial
+optimization problem with applications in resource allocation,
+scheduling, and storage management. Given a collection of items
+with sizes $a_1,\ldots,a_n \in (0,1]$, the objective is to pack
+them into the minimum number of unit-capacity bins. Since
+finding an optimal packing is NP-hard, approximation algorithms
+are studied to obtain near-optimal solutions efficiently.
 
-A central challenge in designing approximation algorithms for bin packing is balancing computational efficiency with solution quality. While simple greedy algorithms can construct feasible packings efficiently, they do not necessarily achieve solutions arbitrarily close to the optimum. An important line of research therefore studies *asymptotic approximation guarantees*, which permit an additive error while seeking a multiplicative approximation ratio approaching one.
+Fernández de la Vega and Lueker (1981)
+\cite{fernandezdelavegaBinPackingCan1981} developed an
+\textbf{asymptotic polynomial-time approximation scheme (APTAS)}
+for bin packing, achieving an approximation guarantee of
+$(1+\varepsilon)\OPT(I)+O(\varepsilon^{-2})$ for any fixed
+$\varepsilon>0$. Subsequently, Karmarkar and Karp (1982)
+\cite{karmarkarEfficientApproximationScheme1982}
+introduced an improved algorithm based on linear programming,
+achieving an additive approximation guarantee of
+$\OPT(I)+O(\log^2\OPT(I))$.
 
-A major breakthrough was achieved by Fernández de la Vega and Lueker (1981) \cite{fernandezdelavegaBinPackingCan1981}, who developed an asymptotic polynomial-time approximation scheme for bin packing. Their approach separates large and small items, applies *linear grouping* to reduce the number of distinct item sizes, and rounds item sizes to obtain a simplified instance. This reduction makes it possible to enumerate feasible bin configurations and solve the resulting packing problem efficiently. For any fixed \(\varepsilon>0\), their algorithm achieves a packing using at most
-$ (1+\varepsilon)\operatorname{OPT}(I)+O(\varepsilon^{-2}) $ bins, with running time linear in the number of items when \(\varepsilon\) is fixed.
+In this report, we examine the techniques underlying these
+two algorithms, with particular emphasis on their approximation
+guarantees and running-time complexity. We first establish
+preliminary results on Restricted Bin Packing (RBP) and
+relevant greedy packing properties. We then analyze the
+de la Vega--Lueker and Karmarkar--Karp algorithms, explaining
+their central ideas and deriving their approximation and
+time-complexity bounds.
 
-Subsequently, Karmarkar and Karp (1982)\cite{karmarkarEfficientApproximationScheme1982} developed a stronger approximation algorithm based on linear programming relaxation and iterative rounding techniques. By exploiting the structure of fractional packing solutions and carefully handling residual instances, their algorithm achieves the improved additive guarantee $\operatorname{OPT}(I)+O(\log^2\operatorname{OPT}(I))$. This result demonstrates how linear programming can be used to obtain substantially stronger approximation guarantees.
-
-In this report, we study the fundamental techniques underlying these two algorithms. We first examine the de la Vega–Lueker algorithm, beginning with the restricted bin packing problem and proceeding to item grouping, rounding, and the treatment of small items. We then investigate the main ideas behind the Karmarkar–Karp algorithm, particularly its configuration-based linear programming formulation and the handling of residual packings. Throughout the report, we emphasize intuitive explanations, illustrative examples, mathematical justification of approximation guarantees, and analysis of running-time complexity. Our goal is to clarify how the two algorithms progressively improve the approximation of the bin packing problem.
 
 
 % \begin{definition}[Bin Packing]
@@ -140,13 +188,36 @@ In this report, we study the fundamental techniques underlying these two algorit
 
 \section{Preliminaries}
 
-\subsection{Notations}
+\subsection{Notation}
+
+A bin packing instance is represented by a multiset
+$I=\{a_1,\ldots,a_n\}$ of $n$ items, where
+$a_i\in(0,1]$ denotes the size of item $i$.
+
+Alternatively, if the instance contains $m$ distinct
+item sizes $y_1,\ldots,y_m$, with $n_j$ items of size
+$y_j$, we may write $I$ in the following representation:
+$
+    I=\{y_1 \times n_1 ,y_2 \times n_2,\ldots,y_m \times n_m\},
+    \, \sum_{j=1}^{m}n_j=n.
+$Here, $y_j \times n_j$ denotes $n_j$ copies of the
+item size $y_j$, rather than exponentiation.
+
+We denote the total size of the instance by $\SIZE(I)=\sum_{i=1}^{n}a_i =\sum_{j=1}^{m}n_jy_j.$ Furthermore, $\OPT(I)$ denotes the minimum number
+of bins required to pack $I$, while $\ALG(I)$
+denotes the number of bins used by an algorithm
+$\ALG$ on instance $I$. We use $\varepsilon>0$
+as an approximation parameter.
 
 \subsection{Greedy Proof}
 
 \subsection{Relaxed Bin Packing}
+\input{contents/relaxed_bin_packing}
 
-\section{De la Vega--Lueker Algorithm}
+\subsection{Partial Order in Bin Packing Instance}
+\input{contents/instance_partial_order}
+
+\section{De La Vega--Lueker Algorithm}
 \cite{fernandezdelavegaBinPackingCan1981}
 
 \section{Karmarkar--Karp Algorithm}
@@ -164,9 +235,8 @@ In this report, we study the fundamental techniques underlying these two algorit
 % Appendix (outside the main-body page limit)
 % ============================================================
 \appendix
-
-\section{Supplementary Proofs}
-
+\input{appendix/bounded_configs}
+\input{appendix/greedy_deflation}
 % ============================================================
 % AI Disclosure (outside the 10-page limit)
 % ============================================================
