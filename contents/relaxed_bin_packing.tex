@@ -198,25 +198,10 @@ by at most $m$.
 \textbf{Greedy Deflation.}
 Although the rounded solution satisfies the
 covering constraints, it may contain more items
-of a particular size than required.
-
-We therefore perform a \textbf{deflation}
-procedure that removes excess items by replacing
-selected configurations with smaller feasible
-configurations.
-
-Since removing items preserves bin feasibility
-and does not introduce additional bins, the
-procedure produces a valid packing without
-increasing the objective value.
-
-A detailed batch-deflation algorithm, together
+of a particular size than required. We therefore perform a polynomial-time \textbf{deflation} procedure that removes excess items by replacing selected configurations with smaller feasible
+configurations. A detailed batch-deflation algorithm, together
 with an illustrative example and correctness
-argument, is provided in
-\Cref{app:greedy-deflation}.
-
-We now establish the approximation guarantee of
-the rounding and deflation procedure.
+argument, is provided in \Cref{app:greedy-deflation}.
 
 By rounding up each of the $q$ LP variables,
 the number of bins increases by at most $q$.
