@@ -37,10 +37,7 @@ $\sum_{j=1}^{m} c_{ij}y_j \leq 1,\, \forall i\in\{1,\ldots,q\}.$
 We represent a packing by a vector
 $\mathbf{a}=(a_1,\ldots,a_q)$, where $a_i$
 denotes the number of bins assigned to
-configuration $C_i$.
-
-The Bin Packing problem can then be formulated
-as the following Integer Linear Program (ILP):
+configuration $C_i$. The Bin Packing problem can then be formulated as the following Integer Linear Program (ILP):
 
 \begin{equation}
 \label{eq:bp-ilp}
@@ -82,9 +79,7 @@ However, as discussed previously in
 feasible configurations $q$ can be exponential
 in $n$. Consequently, even constructing the
 complete ILP may require exponentially many
-variables.
-
-This motivates considering a restricted version
+variables. This motivates considering a restricted version
 of Bin Packing in which the number of feasible
 configurations can be bounded more tightly.
 
@@ -95,9 +90,7 @@ configurations can be bounded more tightly.
 Consider a restricted Bin Packing instance in which
 every item has size at least $\varepsilon>0$.
 Since each bin has unit capacity, it can contain
-at most $k=\lfloor 1/\varepsilon\rfloor$ items.
-
-Under this restriction, the number of feasible
+at most $k=\lfloor 1/\varepsilon\rfloor$ items. Under this restriction, the number of feasible
 configurations can be bounded in terms of $k$
 and the number of distinct item sizes $m$.
 
@@ -109,7 +102,7 @@ the number of non-empty feasible bin configurations
 $q$ satisfies
 $
     q\leq \binom{k+m}{m}-1,
-    \qquad k=\lfloor 1/\varepsilon\rfloor.
+    \, k=\lfloor 1/\varepsilon\rfloor.
 $
 \end{lemma}
 
@@ -136,10 +129,7 @@ constraint yields the desired bound.
 
 A detailed combinatorial illustration of this
 counting argument is provided in
-\Cref{app:bounded-config}.
-
-Consequently, for fixed $k$ and $m$, the
-configuration ILP in \Cref{subsubsec:bp-ilp}
+\Cref{app:bounded-config}. Consequently, for fixed $k$ and $m$, the configuration ILP in \Cref{subsubsec:bp-ilp}
 contains a bounded number of variables,
 independent of the total number of items $n$.
 
@@ -149,20 +139,14 @@ independent of the total number of items $n$.
 Although restricting the number of configurations
 reduces the size of the ILP formulation, solving
 the resulting integer program optimally remains
-computationally challenging.
-
-A natural approach is to relax the integrality
-constraints $a_i \in \mathbb{Z}_{\geq 0}$ to
-$a_i \geq 0$, obtaining a Linear Programming
+computationally challenging. Hence, A natural approach is to relax the integrality constraints $a_i \in \mathbb{Z}_{\geq 0}$ to $a_i \geq 0$, obtaining a Linear Programming
 (LP) relaxation.
 
 Both de la Vega--Lueker and Karmarkar--Karp
 exploit configuration-based formulations and
 LP relaxations, but they employ rounding techniques to
 construct feasible integral packings from the relaxed 
-LP solution
-
-In the following sections, we examine their
+LP solution. In the following sections, we examine their
 respective techniques and analyze their
 approximation guarantees and running-time
 complexities.
