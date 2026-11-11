@@ -1,12 +1,30 @@
 
-\section{Counting Feasible Bin Configurations}
+\section{Bounding Bin Configurations Using Stars and Bars}
 \label{app:bounded-config}
 
-We provide an illustrative interpretation of
-the counting argument in
-\Cref{lem:bounded-config}.
+\begin{lemma}
+\label{lem:bounded-config}
+    For any Bin Packing instance with $m$ distinct
+    item sizes, each at least $\varepsilon>0$,
+    the number of non-empty feasible bin configurations
+    $q$ satisfies
+    \[
+        q\leq \binom{k+m}{m}-1,
+        \qquad k=\lfloor 1/\varepsilon\rfloor.
+    \]
+\end{lemma}
 
-Consider the equation
+\begin{proof}
+Let $c_j$ denote the number of items of size
+$y_j$ in a configuration. Since each bin has unit
+capacity and every item has size at least $\varepsilon$,
+it contains at most $k$ items. Thus,
+\[
+    \sum_{j=1}^{m}c_j\leq k,
+    \qquad c_j\in\mathbb{Z}_{\geq 0}.
+\]
+Introducing a non-negative integer slack variable
+$c_R$ gives the equation
 \[
     c_1+c_2+\cdots+c_m+c_R=k,
 \]
@@ -61,7 +79,12 @@ Hence, the number of arrangements is
     \binom{k+m}{m}.
 \]
 
-Not every arrangement necessarily satisfies
-the bin-capacity constraint. Therefore, this
-count provides an upper bound on the number
-of feasible configurations.
+Exactly one arrangement corresponds to the empty
+configuration, with $c_1=\cdots=c_m=0$ and $c_R=k$.
+Excluding it leaves $\binom{k+m}{m}-1$ possible
+non-empty item-count vectors. Some of these may
+violate the bin-capacity constraint or require more
+items of a given size than are available. Every feasible
+configuration is nevertheless counted, so
+$q\leq\binom{k+m}{m}-1$.
+\end{proof}

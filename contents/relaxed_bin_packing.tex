@@ -1,5 +1,5 @@
 
-\subsubsection{Bin Configurations}
+\subsection{Bin Configurations}
 \label{subsec:bp-binconfig}
 
 The configuration-based formulation provides a common
@@ -92,42 +92,14 @@ at most $k=\lfloor 1/\varepsilon\rfloor$ items. Under this restriction, the numb
 configurations can be bounded in terms of $k$
 and the number of distinct item sizes $m$.
 
-\begin{lemma}
-\label{lem:bounded-config}
-For any Bin Packing instance with $m$ distinct
-item sizes, each at least $\varepsilon>0$,
-the number of non-empty feasible bin configurations
-$q$ satisfies
-$
-    q\leq \binom{k+m}{m}-1,
-    \, k=\lfloor 1/\varepsilon\rfloor.
-$
-\end{lemma}
-
-\begin{proof}
-Let $c_j$ denote the number of items of size
-$y_j$ in a configuration. Since each bin contains
-at most $k$ items,
-$
-    \sum_{j=1}^{m}c_j\leq k,
-    \, c_j\in\mathbb{Z}_{\geq 0}.
-$
-
-Introducing a slack variable $c_R\geq 0$ gives
-$
-    \sum_{j=1}^{m}c_j+c_R=k.
-$
-
-By the stars-and-bars formula, this equation
-has $\binom{k+m}{m}$ non-negative integer
-solutions. Excluding the empty configuration
-and configurations violating the capacity
-constraint yields the desired bound.
-\end{proof}
-
-A detailed combinatorial illustration of this
-counting argument is provided in
-\Cref{app:bounded-config}. Consequently, for fixed $k$ and $m$, the configuration ILP in \Cref{subsubsec:bp-ilp}
+By \Cref{lem:bounded-config}, proved in
+\Cref{app:bounded-config}, the number of non-empty
+feasible bin configurations satisfies
+\[
+    q\leq \binom{k+m}{m}-1.
+\]
+Consequently, for fixed $k$ and $m$, the configuration
+ILP in \Cref{subsubsec:bp-ilp}
 contains a bounded number of variables,
 independent of the total number of items $n$.
 
