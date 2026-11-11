@@ -26,3 +26,5 @@ GEMINI.md
 # Agent-generated documents
 agent_docs/
 .agent/
+
+/docs

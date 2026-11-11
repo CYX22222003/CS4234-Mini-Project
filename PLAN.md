@@ -20,8 +20,6 @@
 
 - Eliminiation and linear grouping => how to choose the threshold, and how to do the grouping
 
-- Compare two rounding methods => round up / principal + residual
-
 - Small items repacking => Proof of the the approximate gurantee => start from two claims => leads to final approiximate gurantee
 
 - State the final time complexity
