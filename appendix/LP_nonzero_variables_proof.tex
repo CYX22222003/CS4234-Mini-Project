@@ -1,0 +1,68 @@
+
+\begin{lemma}[Nonzero Variables in the LP Solution]
+\label{lem:lp_nonzero_variables}
+For the LP relaxation of \Cref{eq:bp-ilp}, there exists
+an optimal vertex solution $\mathbf{a}^*$ with at most
+$m$ nonzero variables.
+\end{lemma}
+
+\begin{proof}
+The feasible region of the LP relaxation is
+\[
+P = \{\mathbf{a} \geq \mathbf{0} :
+A\mathbf{a} \geq \mathbf{n}\},
+\]
+where $A$ is the configuration matrix with $m$ rows,
+corresponding to the $m$ distinct item types.
+
+Since the LP has a finite optimum and its feasible
+region contains no lines, there exists an optimal
+solution $\mathbf{a}^*$ that is a vertex of $P$.
+
+Suppose, for contradiction, that $\mathbf{a}^*$ has
+$k > m$ positive components. Let $S$ denote the
+indices of these components, so that $|S|=k$.
+
+The corresponding $k$ columns of $A$ are vectors
+in $\mathbb{R}^m$. Since $k>m$, these columns
+must be linearly dependent. Therefore, there exists
+a nonzero vector $\mathbf{d}$ such that
+\[
+A\mathbf{d}=\mathbf{0},
+\qquad
+d_j=0 \quad \text{for all } j\notin S.
+\]
+
+Since $a_j^*>0$ for every $j\in S$, we can choose
+a sufficiently small $\epsilon>0$ such that
+\[
+\mathbf{a}^*+\epsilon\mathbf{d}\geq\mathbf{0},
+\qquad
+\mathbf{a}^*-\epsilon\mathbf{d}\geq\mathbf{0}.
+\]
+
+Moreover, since $A\mathbf{d}=\mathbf{0}$,
+\[
+A(\mathbf{a}^*\pm\epsilon\mathbf{d})
+=A\mathbf{a}^*
+\geq\mathbf{n}.
+\]
+Thus, both $\mathbf{a}^*+\epsilon\mathbf{d}$
+and $\mathbf{a}^*-\epsilon\mathbf{d}$ are feasible.
+
+However,
+\[
+\mathbf{a}^*
+=
+\frac{1}{2}(\mathbf{a}^*+\epsilon\mathbf{d})
++
+\frac{1}{2}(\mathbf{a}^*-\epsilon\mathbf{d}).
+\]
+Since $\mathbf{d}\neq\mathbf{0}$, these are two
+distinct feasible solutions. This contradicts
+the assumption that $\mathbf{a}^*$ is a vertex
+of the feasible region.
+
+Therefore, $\mathbf{a}^*$ has at most $m$
+nonzero components.
+\end{proof}

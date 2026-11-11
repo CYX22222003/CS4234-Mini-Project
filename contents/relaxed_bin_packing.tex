@@ -156,11 +156,7 @@ complexities.
 
 Let $\mathbf{a}^*=(a_1^*,\ldots,a_q^*)$ be an optimal
 basic feasible solution to the LP relaxation, with
-objective value
-\[
-    LIN(I)=\sum_{i=1}^{q}a_i^*.
-\]
-
+objective value $LIN(I)=\sum_{i=1}^{q}a_i^*$. 
 Since the LP has $m$ covering constraints, any
 basic feasible solution has at most $m$ non-zero
 variables. This property allows us to construct
@@ -206,10 +202,16 @@ argument, is provided in \Cref{app:greedy-deflation}.
 By rounding up each of the $q$ LP variables,
 the number of bins increases by at most $q$.
 Since deflation does not introduce additional
-bins, we obtain
-\[
-    \ALG(I)\leq\LIN(I)+q
-    \leq\OPT(I)+q.
-\]
+bins, we obtain $\ALG(I) \leq \LIN(I)+q \leq\OPT(I)+q.$
 
 \paragraph{Karmarkar--Karp's approach}
+
+Karmarkar and Karp proposed a slightly different ways of rounding optimal solution $\mathbf{a}^*$ of the LP relaxation. Then, a following packed is constructed by seperate each of components $a_i^*$ of $\mathbf{a}^*$ into two parts -- the integral part $\lfloor a_i^* \rfloor$ and the fractional part $f_i^*$ where $a_i^* = f_i^* + \lfloor a_i^* \rfloor$. Let $\mathbf{p}^* = \{\lfloor a_1^* \rfloor, \dots , \lfloor a_q^* \rfloor \}$, and $\mathbf{f}^* = \{f_1^*, \dots , f_n^* \}$, obviously, $\mathbf{a}^* = \mathbf{p}^* + \mathbf{f}^*$ and $\mathbf{p}^*$ can represent some valid packing of some parts of the current instance $I$. Karmarkar and Karp remove this packing represented by the integral parts from the original packing where $n_j' = n_j - \sum_{i = 1}^{q}\lfloor a_i^* \rfloor c_{ij}, \, \forall j \in \{1, \dots, m\}$. 
+
+The remaining items will form a new instance $I'$ which satisfies following inequalites $n_j' \leq \sum_{i = 1}^{q} f_i^*$, and we can infer that $\mathbf{f}^*$ is an optimal solution to the LP relaxation $I'$ by optimal substructure. To pack the remaining items, there are two possible ways of feasible packing: (1) a packing with exactly $m$ bins is the feasible solution, (2) we follow a greedy algorithm and in the previous part, we have proved that $\ALG(I') = 2\SIZE(I') + 1$.
+
+To prove the first way of packing is feasible, we started from the foundamental property of the LP where an optimal solution can be attained at a vertex of the feasible region, provided such a vertex exists. In our formulation, the non-negativity constraints and the existence of a finite optimum guarantee that an optimal vertex solution exists. Karmarkar and Karp tries to make $\mathbf{a}^*$ an optimal vertex solution. Since we have $m$ constraints (excluding the nonnegativity requirements) and if we expressed the constraints in the standard form of matrix multiplication $A\mathbf{x} \geq \mathbf{b}$, $A$ has $m$ rows. Given the \Cref{lem:lp_nonzero_variables}, since the number of nonzero variables is at most $m$, one bin of config $i$ for each nonzero $f_i^*$ is a valid packing. The second way of proving is demostrated in the greedy proof which has been presented before.
+
+Obviously, both packing will have a running time polynomial of the input instance. Karmarkar and Karp will try both packing and return the minimum one as final packing $\ALG(I') \leq \min(m, 2\SIZE(I') + 1) \leq \frac{m + 2\SIZE(I') + 1}{2} \leq \SIZE(I') + \frac{m + 1}{2}$. The total packing will thus be expressed as $\ALG(I) = \sum_i{\mathbf{p}^*} + \ALG(I').$ In addition, for any instance $I$, we can have $\LIN(I) \geq \SIZE(I)$ because $\LIN(I) = \sum_{i=1}^{q}{a_i} \geq \sum_{i = 1}^{q}{a_i}\sum_{j = 1}^{m}a_ic_{ij} = \sum_{j = 1}^{m}y_j\sum_{i = 1}^q{a_i c_{ij}} \geq \sum_{i = 1}^m{y_j n_j} = \SIZE(I)$.
+
+we can hence derive following relationship: $\OPT(I) \leq \ALG(I) = \sum_i{\mathbf{p}^*} + \ALG(I') \leq \LIN(I) - \LIN(I') + \ALG(I') \leq \LIN(I) - \LIN(I') + \SIZE(I') + \frac{m + 1}{2} \leq \LIN(I) - \LIN(I') + \LIN(I') + \frac{m + 1}{2} = \LIN(I) + \frac{m + 1}{2}.$
