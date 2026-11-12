@@ -219,39 +219,37 @@ as an approximation parameter.
 \subsection{Greedy Algorithms}
 
 \subsubsection{Next-Fit}
+\label{subsubsec:next-fit}
 
 Next-Fit keeps only the most recently opened bin available. If the next
 item does not fit, it closes that bin permanently and opens a new one.
-
-\begin{algorithm}[H]
-  \caption{Next-Fit}
-  \KwIn{Items $a_1,\ldots,a_n$ of $I$, in the given order}
-  \KwOut{A packing $(B_1,\ldots,B_b)$ and its bin count
-    $b=\NF(I)$}
-  $b \gets 0$, $r \gets 0$\;
-  \tcp{$r$ is the remaining capacity of the current bin}
-  \For{$i=1,\ldots,n$}{
-    \If{$a_i>r$}{
-      $b \gets b+1$\;
-      Open an empty bin $B_b$ and set $r \gets 1$\;
-    }
-    Place item $i$ in $B_b$\;
-    $r \gets r-a_i$\;
-  }
-  \Return{$\bigl((B_1,\ldots,B_b),b\bigr)$}\;
-\end{algorithm}
+The pseudocode is given in \Cref{alg:next-fit} in \Cref{app:next-fit}.
 
 \smallskip
 \noindent\textbf{Pairing consecutive bins.}
-For a nonempty instance, write $p=\OPT(I)$ and $b=\NF(I)$. Let $x_{j+1}$
-be the size of the item that opens $B_{j+1}$. Because that item did not
-fit in $B_j$, we have
+For a nonempty instance, write $p=\OPT(I)$ and $b=\NF(I)$, and let
+$\ell_j$ be the load of bin $B_j$. Unit bin capacity gives
+$\SIZE(I)\le\OPT(I)=p$. Let $x_{j+1}$ be the size of the item that
+opens $B_{j+1}$. Because that item did not fit in $B_j$, we have
 \[
   \ell_j+\ell_{j+1}\ge\ell_j+x_{j+1}>1 \qquad (1\le j<b).
 \]
 If $b\ge 2p$, pairing the first $2p$ bins gives
 $\SIZE(I)\ge\sum_{j=1}^{p}(\ell_{2j-1}+\ell_{2j})>p$, a contradiction.
 Thus $\NF(I)\le 2\OPT(I)-1$.
+
+Pairing all disjoint consecutive bins also gives
+\[
+    \SIZE(I)>\left\lfloor\frac{b}{2}\right\rfloor
+    \ge\frac{b-1}{2},
+\]
+where the case $b=1$ follows from $\SIZE(I)>0$.
+Rearranging yields the bound
+\begin{equation}
+    \label{eq:next-fit-size-bound}
+    \NF(I)\le 2\SIZE(I)+1 \leq 2\OPT(I) + 1,
+\end{equation}
+which also holds for the empty instance, where $\NF(I)=0$.
 
 For tightness, let $q=2p-1$ for an integer $p\ge2$. The instance
 $I=\{\tfrac12\times q,\tfrac1{2q}\times q\}$ arrives as $q$ consecutive
@@ -264,28 +262,8 @@ are $2$.
 
 First-Fit uses the first bin that fits, opening a new one if needed.
 
-\begin{algorithm}[H]
-  \caption{First-Fit}
-  \KwIn{Items $a_1,\ldots,a_n$ of $I$, in the given order}
-  \KwOut{A packing $(B_1,\ldots,B_b)$ and its bin count
-    $b=\FF(I)$}
-  $b \gets 0$\;
-  \For{$i=1,\ldots,n$}{
-    $j \gets b+1$\;
-    \For{$k=1,\ldots,b$}{
-      \If{$a_i\leq r_k$}{
-        $j \gets k$\;
-        \textbf{break}\;
-      }
-    }
-    \If{$j=b+1$}{
-      $b \gets b+1$\;
-      Open an empty bin $B_b$ and set $r_b \gets 1$\;
-    }
-    Place item $i$ in $B_j$ and set $r_j \gets r_j-a_i$\;
-  }
-  \Return{$\bigl((B_1,\ldots,B_b),b\bigr)$}\;
-\end{algorithm}
+The pseudocode is given in \Cref{alg:first-fit} in
+\Cref{app:first-fit}.
 
 \smallskip
 \noindent\textbf{Item weighting and amortization.}
@@ -356,7 +334,6 @@ are now complete, so Best-Fit reproduces the First-Fit packing. The
 reordering preserves $\OPT(I)$, so Best-Fit's worst-case ratio is at
 least First-Fit's.
 
-\subsection{Relaxed Bin Packing}
 \input{contents/relaxed_bin_packing}
 
 \subsection{Partial Order in Bin Packing Instance}
@@ -398,14 +375,16 @@ After constructing $J$, we use its LP solution to pack some of the
 original items. The unpacked originals form the residual instance
 processed in the next round.
 
-Let $I$ contain $n$ items with rational sizes and set $W=\SIZE(I)$.
-For $W>2$, set aside items of size at most
-$g=1/W$ until the end and put the rest in $R$. The cutoff bounds
-group lengths, and $gW=1$ limits the cost of reinserting small items.
+Let $I$ contain $n$ items with rational sizes.
+For $\SIZE(I)>2$, set aside items of size at most
+$g=1/\SIZE(I)$ until the end and put the rest in $R$. The cutoff bounds
+group lengths, and $g\SIZE(I)=1$ limits the cost of reinserting small items.
 We use groups with target size $k=2$ and stop
 when the residual size is at most $1+2L$, where
-$L=\lceil\log_2(2W)\rceil$. This integer threshold upper-bounds
-the paper's $1+2\ln(1/g)$.
+$L=\lceil\log_2(2\SIZE(I))\rceil$. This integer threshold upper-bounds
+the paper's $1+2\ln(1/g)$. We choose this threshold to simplify
+the algebra in the proof while preserving the asymptotic approximation
+guarantee.
 
 \subsection{Geometric grouping}
 
@@ -480,25 +459,19 @@ Adding $\SIZE(G_1)<k+1$ and $\SIZE(H)<k$ gives the bound on $\SIZE(E)$.
 
 \subsection{Packing the integer part}
 
-We use the paper's polynomial-time fractional solver with additive
-tolerance one \cite[Theorem~1]{karmarkarEfficientApproximationScheme1982}.
-It returns a basic feasible $x$ with $\sum_j x_j\le\LIN(J)+1$.
-Write $Ax-s=b$, where $s=Ax-b\ge0$ counts extra slots by size.
-The matrix $[A\;\;-I]$ has $m(J)$ rows. At a basic feasible
-solution, the positive variables have independent
-columns. A dependence would allow small moves in both directions
-that preserve feasibility.
-Thus at most $m(J)$ variables are positive across $x$ and $s$.
+Karmarkar and Karp give a polynomial-time algorithm that, for an
+instance $I$ and a tolerance $h>0$, computes a basic feasible solution
+to the LP relaxation with cost at most $\LIN(I)+h$
+\cite[Theorem~1]{karmarkarEfficientApproximationScheme1982}.
+Applying it to $J$ with $h=1$ gives $x$ with
+$\sum_j x_j\le\LIN(J)+1$.
+By the argument bounding the number of nonzero variables in
+\Cref{lem:lp_nonzero_variables}, $x$ has at most $m(J)$ nonzero components.
 
-Following the decomposition $\mathbf{a}^*=\mathbf{p}^*+\mathbf{f}^*$
-described in \Cref{subsubsec:bp-lp}, we split the computed LP solution
-$x$ into its integer part $\lfloor x\rfloor$ and fractional part
-$x-\lfloor x\rfloor$. Open $\lfloor x_j\rfloor$ bins of each layout
-and fill the slots with available originals of the corresponding
-rounded type. The fractional part covers the remaining rounded demand,
-as shown below. The associated unpacked originals form the next residual
-instance $R$, to which grouping and LP rounding are applied again until
-its total size is sufficiently small.
+Applying the integer-part packing from \Cref{subsubsec:bp-lp},
+we open $\lfloor x_j\rfloor$ bins of each layout and fill their slots
+with available originals of the corresponding rounded type.
+The unpacked originals form the next residual instance $R'$.
 
 \begin{lemma}[Residual demand]\label{lem:kk-residual}
 Let $R'$ consist of the original items left unpacked after this step.
@@ -511,16 +484,18 @@ If $X=\sum_j\lfloor x_j\rfloor$ bins were opened, then
 \end{lemma}
 
 \begin{proof}
-With $f=\lfloor x\rfloor$ taken coordinatewise, the whole bins supply
-$Af$ slots. The remaining demand is $b'=\pos{b-Af}$, where the positive
-part sets any negative count to zero. Since $Ax\ge b$ and $A(x-f)\ge0$,
-the fractional parts supply $A(x-f)\ge b'$, as in the worked round below.
-Slots for types with zero remaining demand can be dropped. Each
-remaining original fits in its rounded slot, so by the partial order,
-$\LIN(R')\le\sum_j(x_j-f_j)$.
-Each coordinate of $x-f$ is below one, and at most $m(J)$ are
-positive. Adding $X=\sum_j f_j$ to the bound on $\LIN(R')$ gives
-$X+\LIN(R')\le\sum_j x_j\le\LIN(J)+1$.
+The residual-covering argument in \Cref{subsubsec:bp-lp} and the bound
+on the number of nonzero variables from \Cref{lem:lp_nonzero_variables}
+give
+\[
+    \SIZE(R')\le\LIN(R')
+    \le\sum_j(x_j-\lfloor x_j\rfloor)\le m(J),
+\]
+since each unpacked original fits its corresponding rounded slot.
+Adding $X=\sum_j\lfloor x_j\rfloor$ yields
+\[
+    X+\LIN(R')\le\sum_j x_j\le\LIN(J)+1.\qedhere
+\]
 \end{proof}
 
 \begin{corollary}[One round]\label{cor:kk-round}
@@ -538,37 +513,9 @@ $J\preceq R$, so $\LIN(J)\le\LIN(R)$. Substitute these bounds
 in Lemma~\ref{lem:kk-residual}.
 \end{proof}
 
-\medskip
-\noindent\begin{minipage}{\linewidth}
-\hrule\smallskip
-\textbf{Pseudocode for Karmarkar--Karp Algorithm~2}\par
-\small
-\begin{tabbing}
-\hspace{1.3em}\=\hspace{1.3em}\=\hspace{1.3em}\=\kill
-\textbf{Input} \quad Instance $I$ of items in $(0,1]$.\\
-\textbf{Output} \quad A packing $P$ of $I$.\\
-$W\gets\SIZE(I)$. \textbf{If} $W\le2$, \textbf{return} the Next-Fit packing of $I$.\\
-$g\gets 1/W$, $L\gets\lceil\log_2(2W)\rceil$, $P\gets\varnothing$.\\
-Put all items of size at most $g$ in $S$ and sort the other items into $R$ in decreasing order.\\
-\textbf{While} $\SIZE(R)>1+2L$ \textbf{do}\\
-\> Scan $R$ into shortest consecutive groups $G_1,\ldots,G_q$ of total size at least $2$\\
-\> and an incomplete suffix $H$. Set $E\gets G_1\uplus H$ and $J\gets\varnothing$.\\
-\> \textbf{For} $i=2,\ldots,q$ \textbf{do}\\
-\>\> Put the smallest $|G_i|-|G_{i-1}|$ items of $G_i$ into $E$.\\
-\>\> Add the other items of $G_i$ to $J$, rounding to $\max G_i$ and recording originals.\\
-\> Append a Next-Fit packing of $E$ to $P$.\\
-\> Compute a basic LP solution $x$ on $J$ with cost at most $\LIN(J)+1$.\\
-\> \textbf{For each} configuration $j$ with $x_j\ge1$ \textbf{do}\\
-\>\> Append $\lfloor x_j\rfloor$ bins with configuration $j$ to $P$.\\
-\>\> Fill slots by rounded type with available items, placing their originals in the bins.\\
-\> Set $R$ to the unpacked originals from $J$, in decreasing order.\\
-Append a Next-Fit packing of $R$ to $P$.\\
-\textbf{For each} item in $S$, use a bin with room, opening a new bin only when needed.\\
-\textbf{Return} $P$.
-\end{tabbing}
-\smallskip\hrule
-\end{minipage}
-\par\medskip
+The complete pseudocode for Karmarkar--Karp Algorithm~2 is given in
+\Cref{app:karmarkar-karp}.
+
 
 \noindent\begin{minipage}{\linewidth}
 \textbf{Worked round.}
@@ -578,7 +525,7 @@ Consider an input whose first two groups are
   G_2=\{0.49,0.46,0.43,0.41,0.4\}.
 \]
 Let $G_3,\ldots,G_6$ each contain five items of size $0.4$ and let
-$H=\{0.2\}$. Here $W=12.54>1+2L=11$ and all items exceed $g$.
+$H=\{0.2\}$. Here $\SIZE(I)=12.54>1+2L=11$ and all items exceed $g$.
 Trimming $G_2$ to the length of $G_1$ and rounding gives
 $J=\{0.49\times3,0.4\times20\}$. Pack $E=G_1\uplus\{0.41,0.4,0.2\}$
 separately.
@@ -590,8 +537,10 @@ two layouts it uses, with rows for sizes $0.49$ and $0.40$.
 \[
   \begin{gathered}
     A=\begin{pmatrix}2&0\\0&2\end{pmatrix},\quad
-    b=(3,20)^\top,\quad x=(1.5,10)^\top,\quad f=(1,10)^\top,\\
-    Af=(2,20)^\top,\qquad \pos{b-Af}=(1,0)^\top=A(x-f).
+    b=(3,20)^\top,\quad x=(1.5,10)^\top,\\
+    \lfloor x\rfloor=(1,10)^\top,\qquad
+    A\lfloor x\rfloor=(2,20)^\top,\\
+    \pos{b-A\lfloor x\rfloor}=(1,0)^\top=A(x-\lfloor x\rfloor).
   \end{gathered}
 \]
 The $11$ whole bins leave demand for one $0.49$ slot. Half a copy
@@ -612,14 +561,15 @@ Algorithm~2 runs in polynomial time and returns a packing with
 \begin{proof}
 Originals fit their rounded slots. The separate packing of $E$,
 final Next-Fit pass, and reinsertion of $S$ cover the other items.
-Adjacent Next-Fit bins have combined load above one, so
-$\NF(U)\le2\SIZE(U)+1$. Thus $W\le2$ costs a constant number of
-bins, with zero for empty input. Assume $W>2$.
+By the Next-Fit bound in \Cref{eq:next-fit-size-bound}, proved in
+\Cref{subsubsec:next-fit}, $\NF(U)\le2\SIZE(U)+1$.
+Thus $\SIZE(I)\le2$ costs a constant number of bins, with zero for empty input.
+Assume $\SIZE(I)>2$.
 
 \smallskip\noindent\textbf{Number of rounds.}
 Let $R_i$ be the residual after $i$ rounds, with $R_0$ the items
 larger than $g$. Corollary~\ref{cor:kk-round} gives
-$\SIZE(R_i)\le 2^{-i}W$, so at most $\lceil\log_2 W\rceil$ rounds
+$\SIZE(R_i)\le 2^{-i}\SIZE(I)$, so at most $\lceil\log_2 \SIZE(I)\rceil$ rounds
 occur. After the final round $t$, the stopping condition gives
 $\SIZE(R_t)\le 1+2L$, and Next-Fit uses at most $3+4L$ bins for it.
 
@@ -635,8 +585,8 @@ The fractional cost left after one round is the starting cost of
 the next, so these intermediate terms cancel in the sum.
 The last inequality uses $R_0\preceq I$ and $\LIN(R_t)\ge0$.
 For the separate packing, Lemma~\ref{lem:kk-grouping} with $k=2$ and
-$\ln(2/g)=\ln(2W)\le L$ gives $\SIZE(E_i)\le5+3L$. Next-Fit
-therefore uses at most $11+6L$ bins for $E_i$. Including the final
+$\ln(2/g)=\ln(2\SIZE(I))\le L$ gives $\SIZE(E_i)\le5+3L$. Next-Fit
+therefore uses at most $2(5 + 3L) + 1 = 11+6L$ bins for $E_i$. Including the final
 residual, the total before reinsertion is at most
 $\OPT(I)+t(12+6L)+3+4L=\OPT(I)+O(L^2)$.
 
@@ -644,17 +594,21 @@ $\OPT(I)+t(12+6L)+3+4L=\OPT(I)+O(L^2)$.
 If reinsertion opens a new bin, consider the item that opened the last
 new bin. Its size is at most $g$, so each earlier bin had load
 greater than $1-g$ when that item arrived. With $B$ final bins,
-we have $W\ge (B-1)(1-g)$, hence
-$B\le W/(1-g)+1=W+W/(W-1)+1\le\OPT(I)+3$.
+we have $\SIZE(I)\ge (B-1)(1-g)$, hence
+\[
+    B\le\frac{\SIZE(I)}{1-g}+1
+    =\SIZE(I)+\frac{\SIZE(I)}{\SIZE(I)-1}+1
+    \le\OPT(I)+3.
+\]
 If no bin is opened, the preceding $O(L^2)$ overhead applies.
-Finally, $W\le\OPT(I)$ gives $L=O(\log(\OPT(I)+1))$.
+Finally, $\SIZE(I)\le\OPT(I)$ gives $L=O(\log(\OPT(I)+1))$.
 
 \smallskip\noindent\textbf{Running time.}
 The paper's solver uses approximate knapsack to search for violated
 dual constraints \cite[Section~6]{karmarkarEfficientApproximationScheme1982}.
 Its polynomial time bound $T(m,n)$ for $m$ types and $n$ items
 applies with tolerance one and sizes at least $1/n$ since
-$g=1/W\ge1/n$. Scanning items and positive configurations takes
+$g=1/\SIZE(I)\ge1/n$. Scanning items and positive configurations takes
 $O(n+m(J_i)^2)$ per round outside the solve. Over $O(\log n)$ rounds,
 $m(J_i)\le n/2^{i+1}$, so the positive powers of $m$ in $T$ sum
 geometrically and absorb $m(J_i)^2$, with logs bounded at the first
@@ -678,6 +632,9 @@ capacities give $O(T(\lceil n/2\rceil,n)+n\log n)$ total time.
 \input{appendix/greedy_deflation}
 \input{appendix/partial_order_proof}
 \input{appendix/LP_nonzero_variables_proof.tex}
+\input{appendix/next_fit}
+\input{appendix/first_fit}
+\input{appendix/karmarkar_karp}
 % ============================================================
 % AI Disclosure (outside the 10-page limit)
 % ============================================================

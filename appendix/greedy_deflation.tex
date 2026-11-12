@@ -15,41 +15,34 @@ $C_i^{(j\leftarrow x)}$ as the configuration
 obtained by replacing only its $j$-th
 coordinate with $x$.
 
-\paragraph{Algorithm.}
-For each item type $j=1,\ldots,m$:
-
-\begin{enumerate}
-    \item Compute the number of excess items:
-    \[
-        e_j=\sum_{i=1}^{q}b_i c_{ij}-n_j.
-    \]
-
-    \item While $e_j>0$, choose a configuration
-    $C_i$ satisfying $b_i>0$ and $c_{ij}>0$.
-
-    Let $t=c_{ij}$. Compute
-    \[
-    \begin{aligned}
-        d &= \min\{e_j,b_i t\},\\
-        k &= \left\lfloor\frac{d}{t}\right\rfloor,\\
-        r &= d\bmod t.
-    \end{aligned}
-    \]
-
-    Replace $k$ bins of configuration $C_i$
-    with $C_i^{(j\leftarrow 0)}$.
-
-    If $r>0$, replace one additional bin
-    with $C_i^{(j\leftarrow t-r)}$.
-
-    Update the corresponding multiplicities
-    in $\mathbf{b}$ and set
-    \[
-        e_j\leftarrow e_j-d.
-    \]
-
-    Discard any empty bins.
-\end{enumerate}
+\begin{algorithm}[H]
+    \caption{Greedy Deflation}
+    \label{alg:greedy-deflation}
+    \KwIn{Feasible configurations $C_1,\ldots,C_q$, required item
+        counts $n_1,\ldots,n_m$, and integer multiplicities
+        $\hat{\mathbf{a}}$ satisfying the covering constraints}
+    \KwOut{Configuration multiplicities $\mathbf{b}$ packing exactly
+        the required items, with no increase in the number of bins}
+    $\mathbf{b} \gets \hat{\mathbf{a}}$\;
+    \For{$j=1,\ldots,m$}{
+        $e_j \gets \sum_{i=1}^{q}b_i c_{ij}-n_j$\;
+        \While{$e_j>0$}{
+            Choose a configuration $C_i$ with $b_i>0$ and $c_{ij}>0$\;
+            $t \gets c_{ij}$, $d \gets \min\{e_j,b_i t\}$\;
+            $k \gets \lfloor d/t\rfloor$, $r \gets d\bmod t$\;
+            Replace $k$ bins of configuration $C_i$
+                with $C_i^{(j\leftarrow 0)}$\;
+            \If{$r>0$}{
+                Replace one additional bin of configuration $C_i$
+                    with $C_i^{(j\leftarrow t-r)}$\;
+            }
+            Update the corresponding multiplicities in $\mathbf{b}$\;
+            $e_j \gets e_j-d$\;
+            Discard any empty bins\;
+        }
+    }
+    \Return{$\mathbf{b}$}\;
+\end{algorithm}
 
 The algorithm processes excess items in batches
 rather than examining individual bins.

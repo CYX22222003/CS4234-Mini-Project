@@ -1,0 +1,21 @@
+\section{Next-Fit Pseudocode}
+\label{app:next-fit}
+
+\begin{algorithm}[H]
+    \caption{Next-Fit}
+    \label{alg:next-fit}
+    \KwIn{Items $a_1,\ldots,a_n$ of $I$, in the given order}
+    \KwOut{A packing $(B_1,\ldots,B_b)$ and its bin count
+        $b=\NF(I)$}
+    $b \gets 0$, $r \gets 0$\;
+    \tcp{$r$ is the remaining capacity of the current bin}
+    \For{$i=1,\ldots,n$}{
+        \If{$a_i>r$}{
+            $b \gets b+1$\;
+            Open an empty bin $B_b$ and set $r \gets 1$\;
+        }
+        Place item $i$ in $B_b$\;
+        $r \gets r-a_i$\;
+    }
+    \Return{$\bigl((B_1,\ldots,B_b),b\bigr)$}\;
+\end{algorithm}

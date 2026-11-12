@@ -1,0 +1,26 @@
+\section{First-Fit Pseudocode}
+\label{app:first-fit}
+
+\begin{algorithm}[H]
+    \caption{First-Fit}
+    \label{alg:first-fit}
+    \KwIn{Items $a_1,\ldots,a_n$ of $I$, in the given order}
+    \KwOut{A packing $(B_1,\ldots,B_b)$ and its bin count
+        $b=\FF(I)$}
+    $b \gets 0$\;
+    \For{$i=1,\ldots,n$}{
+        $j \gets b+1$\;
+        \For{$k=1,\ldots,b$}{
+            \If{$a_i\leq r_k$}{
+                $j \gets k$\;
+                \textbf{break}\;
+            }
+        }
+        \If{$j=b+1$}{
+            $b \gets b+1$\;
+            Open an empty bin $B_b$ and set $r_b \gets 1$\;
+        }
+        Place item $i$ in $B_j$ and set $r_j \gets r_j-a_i$\;
+    }
+    \Return{$\bigl((B_1,\ldots,B_b),b\bigr)$}\;
+\end{algorithm}

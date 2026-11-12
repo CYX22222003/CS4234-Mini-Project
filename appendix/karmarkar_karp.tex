@@ -1,0 +1,34 @@
+\section{Karmarkar--Karp Pseudocode}
+\label{app:karmarkar-karp}
+
+\medskip
+\noindent\begin{minipage}{\linewidth}
+\hrule\smallskip
+\textbf{Pseudocode for Karmarkar--Karp Algorithm~2}\par
+\small
+\begin{tabbing}
+\hspace{1.3em}\=\hspace{1.3em}\=\hspace{1.3em}\=\kill
+\textbf{Input} \quad Instance $I$ of items in $(0,1]$.\\
+\textbf{Output} \quad A packing $P$ of $I$.\\
+$W\gets\SIZE(I)$. \textbf{If} $W\le2$, \textbf{return} the Next-Fit packing of $I$.\\
+$g\gets 1/W$, $L\gets\lceil\log_2(2W)\rceil$, $P\gets\varnothing$.\\
+Put all items of size at most $g$ in $S$ and sort the other items into $R$ in decreasing order.\\
+\textbf{While} $\SIZE(R)>1+2L$ \textbf{do}\\
+\> Scan $R$ into shortest consecutive groups $G_1,\ldots,G_q$ of total size at least $2$\\
+\> and an incomplete suffix $H$. Set $E\gets G_1\uplus H$ and $J\gets\varnothing$.\\
+\> \textbf{For} $i=2,\ldots,q$ \textbf{do}\\
+\>\> Put the smallest $|G_i|-|G_{i-1}|$ items of $G_i$ into $E$.\\
+\>\> Add the other items of $G_i$ to $J$, rounding to $\max G_i$ and recording originals.\\
+\> Append a Next-Fit packing of $E$ to $P$.\\
+\> Compute a basic LP solution $x$ on $J$ with cost at most $\LIN(J)+1$.\\
+\> \textbf{For each} configuration $j$ with $x_j\ge1$ \textbf{do}\\
+\>\> Append $\lfloor x_j\rfloor$ bins with configuration $j$ to $P$.\\
+\>\> Fill slots by rounded type with available items, placing their originals in the bins.\\
+\> Set $R$ to the unpacked originals from $J$, in decreasing order.\\
+Append a Next-Fit packing of $R$ to $P$.\\
+\textbf{For each} item in $S$, use a bin with room, opening a new bin only when needed.\\
+\textbf{Return} $P$.
+\end{tabbing}
+\smallskip\hrule
+\end{minipage}
+\par\medskip
