@@ -6,22 +6,27 @@ The configuration-based formulation provides a common
 starting point for the approximation techniques developed
 by both de la Vega--Lueker and Karmarkar--Karp.
 
-A \textbf{bin configuration} describes the composition
-of a single bin, specifying the number of items of
-each distinct size packed into it. It can also be
-viewed as a multiset of item sizes whose total size
-does not exceed the unit capacity. Two configurations
-are considered identical if they contain the same
-number of items of each distinct size.
+A \textbf{bin configuration} specifies the number of slots
+of each item size in a single unit-capacity bin.
+For distinct item sizes $y_1,\ldots,y_m$, a configuration
+is a nonzero vector
+$c=(c_1,\ldots,c_m)\in\Z_{\geq 0}^m$ satisfying
+\[
+    \sum_{j=1}^{m} c_j y_j \leq 1.
+\]
+Here, $c_j$ denotes the number of slots for items of size
+$y_j$. Two configurations are identical if their slot
+counts agree for every size.
 
-In the general Bin Packing problem, the number of
-possible configurations can grow exponentially with
-the number of items. This is because each configuration
-corresponds to a non-empty sub-multiset of the input
-items, although not every sub-multiset is necessarily
-feasible. Therefore, the total number of feasible
-configurations is at most $2^n-1$, where $n$ is the
-number of input items.
+The count $c_j$ need not be bounded by the number $n_j$
+of items of that size in the instance. Configurations
+describe possible bin layouts; the covering constraints
+ensure that the selected layouts provide enough slots
+for the actual items. Excess slots may remain unused.
+
+The number of feasible configurations can be very large,
+and enumerating all of them need not take polynomial
+time in the input size.
 
 
 \subsubsection{Integer Linear Programming Formulation}
@@ -105,6 +110,7 @@ independent of the total number of items $n$.
 
 
 \subsubsection{Linear Programming Relaxation}
+\label{subsubsec:bp-lp}
 
 Although restricting the number of configurations
 reduces the size of the ILP formulation, solving

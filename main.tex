@@ -359,6 +359,7 @@ least First-Fit's.
 \input{contents/relaxed_bin_packing}
 
 \subsection{Partial Order in Bin Packing Instance}
+\label{subsec:instance-partial-order}
 \input{contents/instance_partial_order}
 
 \section{De La Vega--Lueker Algorithm}
@@ -369,30 +370,35 @@ least First-Fit's.
 
 We study Algorithm~2 of Karmarkar and Karp
 \cite[Theorem~4]{karmarkarEfficientApproximationScheme1982}.
-The input is a list of $n$ items with rational sizes in $(0,1]$,
-and each bin has capacity one. In each round, $R$ is the collection
-of original items being processed. Grouping produces $J$, the rounded
-copies used in the LP, and $E$, the originals packed separately in
-that round. After opening the whole bins from the LP, the originals
-still unpacked become the new $R$.
+We use the configuration formulation in \Cref{subsubsec:bp-ilp}
+and its LP relaxation in \Cref{subsubsec:bp-lp}.
+For an instance $U$, let $m(U)$ count its distinct sizes. We write
+the covering constraints as $Ax\ge b$, $x\ge0$, where
+$A_{ji}=c_{ij}$: row $j$ corresponds to item size $y_j$ and column
+$i$ to configuration $C_i$. The variable $x_i$ is the fractional
+usage of configuration $C_i$, denoted by $a_i$ in the earlier
+formulation. The demand vector $b=(n_1,\ldots,n_{m(U)})^\top$
+records the number of items of each size in $U$.
+For the partial order defined in \Cref{subsec:instance-partial-order},
+we also use fractional monotonicity:
+$U\preceq V$ implies $\LIN(U)\le\LIN(V)$
+\cite[Section~4]{karmarkarEfficientApproximationScheme1982}.
 
-For an instance $U$, let $m(U)$ count its distinct sizes. A configuration
-is a layout that fits in one bin. Each column of $A$ gives the slot
-counts for one layout, with one row per size. Two $0.40$ slots use
-$0.80$ of a bin. Three would exceed its capacity.
-The LP chooses usage counts $x_j\ge0$, which may be fractional.
-The demand vector $b$ counts items by size, and $Ax\ge b$ requires
-enough slots of each size across all the chosen layouts. Extra slots
-can stay empty.
+Karmarkar and Karp's innovative approach combines geometric grouping
+with LP rounding and repeated processing of the residual instance.
+In each round, let
+$R$ denote the original items still unpacked. Geometric grouping produces
+a rounded instance $J$ for the LP and a collection $E$ of original items
+excluded from $J$ during grouping, which are packed separately.
+The demand vector $b$ records the multiplicities of the rounded sizes
+in $J$.
 
-The minimum of $\sum_j x_j$ is the fractional bin count $\LIN(U)$.
-Since each bin holds at most one unit of size and every whole-bin
-packing gives feasible LP counts, $\SIZE(U)\le\LIN(U)\le\OPT(U)$.
-Write $U\preceq V$ if each item in $U$ can be matched to a distinct
-item in $V$ of at least the same size. By the preliminaries,
-$U\preceq V$ implies $\LIN(U)\le\LIN(V)$.
+After constructing $J$, we use its LP solution to pack some of the
+original items. The unpacked originals form the residual instance
+processed in the next round.
 
-Let \(I\) be the original list of items and let \(W=\operatorname{SIZE}(I)\) be their total size. For $W>2$, set aside items of size at most
+Let $I$ contain $n$ items with rational sizes and set $W=\SIZE(I)$.
+For $W>2$, set aside items of size at most
 $g=1/W$ until the end and put the rest in $R$. The cutoff bounds
 group lengths, and $gW=1$ limits the cost of reinserting small items.
 We use groups with target size $k=2$ and stop
@@ -420,16 +426,30 @@ Here $\uplus$ denotes multiset union.
 \end{lemma}
 
 \begin{proof}
-Sort $U$ in decreasing order. Repeatedly take the shortest prefix of the
-remaining items whose total size is at least $k$, forming groups
-$G_1,\ldots,G_q$. If $q=0$, then $E=U$ and $J=\varnothing$ satisfy
-all the bounds because $\SIZE(U)<k$. Otherwise put $G_1$ and the final
-suffix $H$, of total size below $k$, into $E$.
-For each completed group let $\ell_i=|G_i|$. We have
-$k\le\SIZE(G_i)<k+1$. Also,
-$\ell_{i-1}\le\ell_i$ because a prefix of length less than
-$\ell_{i-1}$ has total size below $k$ in $G_{i-1}$ and is no larger
-in $G_i$.
+Sort the items of $U$ in non-increasing order of size. Starting from
+the largest remaining item, collect consecutive items until their total
+size first reaches or exceeds $k$; these items form $G_1$. Repeat this
+procedure on the remaining items to form $G_2,G_3,\ldots$. Stop when
+the total size of all remaining items is less than $k$. Let $q$ be the
+number of complete groups formed, and let $H$ denote the remaining
+items, possibly none. Thus, each complete group $G_i$ has total size
+at least $k$, whereas $\SIZE(H)<k$.
+
+If $q=0$, then $\SIZE(U)<k$, so no complete group can be formed.
+In this case, set $E=U$ and $J=\varnothing$: all items are assigned
+to the subinstance packed separately, and there are no rounded items
+for the LP. These choices satisfy the lemma's bounds.
+
+Otherwise, place the first complete group $G_1$ and the incomplete
+suffix $H$ into $E$. The later groups will contribute items to $J$
+after trimming and rounding; their trimmed items will also be added
+to $E$.
+
+For each complete group, let $\ell_i=|G_i|$. Since its total size first
+reaches $k$ upon adding the last item, whose size is at most one, we have
+$k\le\SIZE(G_i)<k+1$. Moreover, items in later groups are no larger
+than those in earlier groups, so reaching the same target $k$ requires
+at least as many items. Thus, $\ell_{i-1}\le\ell_i$.
 
 For each $i\ge 2$, put the $d_i=\ell_i-\ell_{i-1}$ smallest items
 of $G_i$ into $E$. Round its remaining $\ell_{i-1}$ items up to
@@ -468,8 +488,16 @@ solution, the positive variables have independent
 columns. A dependence would allow small moves in both directions
 that preserve feasibility.
 Thus at most $m(J)$ variables are positive across $x$ and $s$.
-Open $\lfloor x_j\rfloor$ bins of each layout and fill the slots
-with available originals of the corresponding rounded type.
+
+Following the decomposition $\mathbf{a}^*=\mathbf{p}^*+\mathbf{f}^*$
+described in \Cref{subsubsec:bp-lp}, we split the computed LP solution
+$x$ into its integer part $\lfloor x\rfloor$ and fractional part
+$x-\lfloor x\rfloor$. Open $\lfloor x_j\rfloor$ bins of each layout
+and fill the slots with available originals of the corresponding
+rounded type. The fractional part covers the remaining rounded demand,
+as shown below. The associated unpacked originals form the next residual
+instance $R$, to which grouping and LP rounding are applied again until
+its total size is sufficiently small.
 
 \begin{lemma}[Residual demand]\label{lem:kk-residual}
 Let $R'$ consist of the original items left unpacked after this step.
