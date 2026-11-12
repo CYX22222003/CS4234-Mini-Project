@@ -34,6 +34,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
 
 % ============================================================
 % Lists and Formatting
@@ -359,6 +360,10 @@ The version of geometric grouping used in Algorithm~2 forms groups by
 total size. As sizes decrease, more items may be needed to reach the
 same target. Trimming each group to the length of its predecessor
 lets the rounded items fit into the predecessor's slots.
+\Cref{fig:geometric-grouping} in \Cref{app:geometric-grouping}
+illustrates the groups $G_i$, the items set aside in $E$, and the
+rounded instance $J$. The dotted connections show how items of $J$
+can be matched to slots in the preceding groups.
 
 \begin{lemma}[Geometric grouping]\label{lem:kk-grouping}
 Suppose all items of $U$ have size greater than $g$, where $0<g<1$.
@@ -605,6 +610,8 @@ capacities give $O(T(\lceil n/2\rceil,n)+n\log n)$ total time.
 \input{appendix/next_fit}
 \input{appendix/first_fit}
 \input{appendix/karmarkar_karp}
+\clearpage
+\input{appendix/geometric_grouping_illustration}
 % ============================================================
 % AI Disclosure (outside the 10-page limit)
 % ============================================================
