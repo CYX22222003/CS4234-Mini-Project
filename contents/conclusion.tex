@@ -1,0 +1,32 @@
+We studied the de la Vega--Lueker and Karmarkar--Karp algorithms,
+explaining their grouping and rounding techniques and deriving their
+approximation guarantees and running-time bounds. The de la Vega--Lueker
+algorithm gives an APTAS using at most
+$(1+\eps)\OPT(I)+O(\eps^{-2})$ bins for any fixed $\eps>0$.
+Karmarkar--Karp achieves the stronger additive guarantee
+$\OPT(I)+O(\log^2(\OPT(I)+1))$ in polynomial time.
+
+By studying these two algorithms, we learned how grouping reduces the number of distinct item sizes, allowing a polynomial-size configuration ILP for fixed $\eps$ in the
+de la Vega--Lueker scheme. LP relaxation and careful rounding then
+produce a feasible packing with a provable approximation guarantee.
+
+Beyond our scope, Hoberg and Rothvoss~\cite{hobergLogarithmicAdditive2017}
+improved the additive guarantee to $O(\log\OPT(I))$ using discrepancy
+theory and a two-stage construction that packs items into containers
+and then containers into bins. This remains the best known polynomial-time
+additive approximation guarantee.
+Understanding these discrepancy methods would be a natural extension
+of our study of LP rounding.
+
+Recent work also establishes limits on further improvements.
+OpenAI's September 2026 preprint~\cite{openaiAdditiveHardness2026}
+constructs instances with arbitrarily large gaps
+$\OPT(I)-\LIN(I)$, disproving the Modified Integer Round-Up
+Conjecture $\OPT(I)\le\lceil\LIN(I)\rceil+1$.
+It also proves that no deterministic polynomial-time algorithm can
+guarantee $\OPT(I)+C$ bins for any fixed constant $C$, unless
+$\mathrm{P}=\mathrm{NP}$; both results hold even when every item
+exceeds $1/6$. These results show that a constant additive loss is
+unattainable in general under $\mathrm{P}\ne\mathrm{NP}$, while leaving
+room to improve the logarithmic upper bound. Their proofs are beyond
+the scope of this report.
