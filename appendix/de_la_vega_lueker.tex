@@ -1,0 +1,41 @@
+\section{De La Vega--Lueker Pseudocode}
+\label{app:dlvl}
+
+\begin{algorithm}[H]
+\caption{De La Vega--Lueker}\label{alg:dlvl}
+\KwIn{Items $a_1,\ldots,a_n$ of $I$, and a parameter $\varepsilon>0$}
+\KwOut{A packing $(B_1,\ldots,B_b)$ of $I$ and its bin count $b$}
+$\delta\gets\varepsilon/(\varepsilon+2)$,\ $t\gets\lceil\delta^{-2}\rceil$\;
+$S\gets\{a_i:a_i<\delta\}$,\ $L\gets I\setminus S$,\
+$h\gets\lfloor|L|/t\rfloor$\;
+\eIf{$h=0$}{
+  $R\gets L$,\ $J\gets\varnothing$\;
+}{
+  Select the group boundaries of $L$ in non-increasing order,
+  giving $R,G_1,\ldots,G_t$\;
+  \For{$j=2,\ldots,t$}{
+    Round every item of $G_j$ up to $\min G_{j-1}$ and add it to $J$,
+    recording its original\;
+  }
+  Solve the LP relaxation on $J$ for an optimal basic feasible solution
+  $\mathbf{a}^*$\;
+  Open $\lceil a_i^*\rceil$ bins of each configuration $C_i$, then
+  deflate (\Cref{app:greedy-deflation})\;
+  Fill each slot with the original of its rounded item\;
+  Open one bin for each item of $G_1$\;
+}
+Open one bin for each item of $R$, and let $B_1,\ldots,B_b$ be the
+bins opened so far\;
+\tcp{Reinsertion: the pointer $p$ never moves backward}
+$p\gets1$\;
+\ForEach{item $a\in S$}{
+  \While{$p\le b$ \textbf{and} $a$ does not fit in $B_p$}{
+    $p\gets p+1$\;
+  }
+  \If{$p>b$}{
+    $b\gets b+1$, and open an empty bin $B_b$\;
+  }
+  Place $a$ in $B_p$\;
+}
+\Return{$\bigl((B_1,\ldots,B_b),b\bigr)$}\;
+\end{algorithm}
