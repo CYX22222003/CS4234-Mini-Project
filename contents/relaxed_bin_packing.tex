@@ -23,7 +23,6 @@ of items of that size in the instance. Configurations
 describe possible bin layouts; the covering constraints
 ensure that the selected layouts provide enough slots
 for the actual items. Excess slots may remain unused.
-
 The number of feasible configurations can be very large,
 and enumerating all of them need not take polynomial
 time in the input size.
@@ -77,8 +76,7 @@ Thus, minimizing the ILP objective is equivalent
 to minimizing the number of bins required to pack
 $I$, and its optimal value is $\OPT(I)$.
 
-However, as discussed previously in 
-\Cref{subsec:bp-binconfig}, the number of
+However, as discussed previously, the number of
 feasible configurations $q$ can be exponential
 in $n$. Consequently, even constructing the
 complete ILP may require exponentially many
@@ -115,7 +113,7 @@ independent of the total number of items $n$.
 Although restricting the number of configurations
 reduces the size of the ILP formulation, solving
 the resulting integer program optimally remains
-computationally challenging. Hence, A natural approach is to relax the integrality constraints $a_i \in \mathbb{Z}_{\geq 0}$ to $a_i \geq 0$, obtaining a Linear Programming
+computationally challenging. Hence, a natural approach is to relax the integrality constraints $a_i \in \mathbb{Z}_{\geq 0}$ to $a_i \geq 0$, obtaining a Linear Programming
 (LP) relaxation.
 
 Both de la Vega--Lueker and Karmarkar--Karp
@@ -127,17 +125,27 @@ respective techniques and analyze their
 approximation guarantees and running-time
 complexities.
 
+Let $\mathbf{a}^*=(a_1^*,\ldots,a_q^*)$ be an optimal
+basic feasible solution to the LP relaxation, with
+objective value $\LIN(I)=\sum_{i=1}^{q}a_i^*$. The following
+lemma guarantees that such a solution exists and bounds
+the number of configurations it uses.
+
+\begin{lemma}[Nonzero Variables in the LP Solution]
+\label{lem:lp_nonzero_variables}
+The LP relaxation of \Cref{eq:bp-ilp} has an optimal
+basic feasible solution (equivalently, an optimal vertex solution)
+with at most $m$ nonzero variables, where $m$ is the number
+of distinct item sizes.
+\end{lemma}
+
+The detailed proof is given in \Cref{app:lp-nonzero-variables}.
 
 \paragraph{De La Vega--Lueker's Approach}
 
-Let $\mathbf{a}^*=(a_1^*,\ldots,a_q^*)$ be an optimal
-basic feasible solution to the LP relaxation, with
-objective value $LIN(I)=\sum_{i=1}^{q}a_i^*$. 
-Since the LP has $m$ covering constraints, any
-basic feasible solution has at most $m$ non-zero
-variables. This property allows us to construct
-an integral solution by rounding up each variable,
-while introducing at most $m$ additional bins.
+By \Cref{lem:lp_nonzero_variables}, rounding up each variable
+of $\mathbf{a}^*$ produces an integral solution while introducing
+at most $m$ additional bins.
 
 \textbf{Rounding up the LP solution.}
 We construct an integer vector
@@ -164,10 +172,12 @@ configurations. A detailed batch-deflation algorithm, together
 with an illustrative example and correctness
 argument, is provided in \Cref{app:greedy-deflation}.
 
-By rounding up each of the $q$ LP variables,
-the number of bins increases by at most $q$.
-Since deflation does not introduce additional
-bins, we obtain $\ALG(I) \leq \LIN(I)+q \leq\OPT(I)+q.$
+More generally, rounding an arbitrary optimal LP solution
+introduces at most $q$ additional bins, giving
+$\ALG(I)\leq\LIN(I)+q\leq\OPT(I)+q$ after deflation.
+Choosing an optimal vertex solution as above strengthens
+the additive bound to $m$, because at most $m$ variables
+are nonzero.
 
 \paragraph{Karmarkar--Karp's Approach}
 

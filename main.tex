@@ -218,6 +218,8 @@ as an approximation parameter.
 The greedy algorithms considered here process items in the given order,
 placing each item according to a local rule without moving previously
 packed items. They differ in which existing bins they consider.
+Both de la Vega--Lueker and Karmarkar--Karp use greedy packing
+in some steps of their algorithms.
 
 \smallskip
 \noindent\textbf{Next-Fit (NF).}
@@ -245,45 +247,38 @@ LP rounding and Karmarkar--Karp analyses.
 
 \smallskip
 \noindent\textbf{Pairing consecutive bins.}
-For a nonempty instance, write $p=\OPT(I)$ and $b=\NF(I)$, and let
-$\ell_j$ be the load of bin $B_j$. Unit bin capacity gives
-$\SIZE(I)\le\OPT(I)=p$. Let $x_{j+1}$ be the size of the item that
-opens $B_{j+1}$. Because that item did not fit in $B_j$, we have
+Let $b=\NF(I)$ for a nonempty instance $I$, and let $\ell_j$ be
+the load of bin $B_j$. If $x_{j+1}$ is the size of the item that
+opens $B_{j+1}$, then it did not fit in $B_j$, so
 \[
-  \ell_j+\ell_{j+1}\ge\ell_j+x_{j+1}>1 \qquad (1\le j<b).
+    \ell_j+\ell_{j+1}\ge\ell_j+x_{j+1}>1
+    \qquad(1\le j<b).
 \]
-If $b\ge 2p$, pairing the first $2p$ bins gives
-$\SIZE(I)\ge\sum_{j=1}^{p}(\ell_{2j-1}+\ell_{2j})>p$, a contradiction.
-Thus $\NF(I)\le 2\OPT(I)-1$.
+Thus, consecutive bins have combined load greater than $1$.
+Pair the bins as $(B_1,B_2),(B_3,B_4),\ldots$, leaving the last bin
+unpaired if $b$ is odd. There are $\lfloor b/2\rfloor$ pairs, so
+\[
+    \OPT(I)\ge\SIZE(I)
+    \ge\sum_{j=1}^{\lfloor b/2\rfloor}(\ell_{2j-1}+\ell_{2j})
+    >\left\lfloor\frac{b}{2}\right\rfloor
+    \qquad(b\ge2).
+\]
+For $b=1$, we also have $\SIZE(I)>0=\lfloor b/2\rfloor$.
+Since $\lfloor b/2\rfloor$ and $\OPT(I)$ are integers,
+$\lfloor b/2\rfloor\le\OPT(I)-1$, giving
+$\NF(I)\le2\OPT(I)-1$.
 
-Pairing all disjoint consecutive bins also gives
-\[
-    \SIZE(I)>\left\lfloor\frac{b}{2}\right\rfloor
-    \ge\frac{b-1}{2},
-\]
-where the case $b=1$ follows from $\SIZE(I)>0$.
-Rearranging yields the bound
+The same pairing also gives a bound in terms of total item size:
+using $\lfloor b/2\rfloor\ge(b-1)/2$ and rearranging yields
 \begin{equation}
     \label{eq:next-fit-size-bound}
     \NF(I)\le 2\SIZE(I)+1 \leq 2\OPT(I) + 1,
 \end{equation}
 which also holds for the empty instance, where $\NF(I)=0$.
 
-For tightness, let $q=2p-1$ for an integer $p\ge2$. The instance
-$I=\{\tfrac12\times q,\tfrac1{2q}\times q\}$ arrives as $q$ consecutive
-pairs $(\tfrac12,\tfrac1{2q})$. Next-Fit uses one bin per pair. Pairing
-$q-1$ half-size items and packing the remaining half with all the small
-items gives $p$ full bins. Thus $\NF(I)/\OPT(I)=2-1/p$, and both its
-absolute and asymptotic approximation ratios are $2$.
-
-The \emph{absolute approximation ratio} bounds $\ALG(I)/\OPT(I)$
-over all nonempty instances; the \emph{asymptotic ratio} describes the
-worst case as $\OPT(I)$ grows, allowing lower-order additive terms.
-Johnson et al.~\cite[Theorem~2.2]{johnsonWorstCasePerformanceBounds1974a}
-proved that FF and BF each use at most $\tfrac{17}{10}\OPT(I)+2$ bins.
-Later results of D\'osa and Sgall remove the additive term, as surveyed
-by Sgall~\cite[Section~1.3]{sgallOnlineBinPacking2014}.
-\Cref{tab:greedy-guarantees} summarizes the tight guarantees.
+\Cref{tab:greedy-guarantees} compares the Next-Fit bound proved above
+with the guarantees for FF and BF. The absolute ratio applies to all nonempty instances,
+while the asymptotic ratio describes the worst case as $\OPT(I)$ grows.
 
 \begin{table}[htbp]
     \centering
@@ -353,10 +348,12 @@ $0\le r<t$.
 \noindent\textbf{Linear grouping.}
 List $L$ in non-increasing order of size. Set aside the first $r$ items
 as $R$, and partition the remaining $th$ items into $t$ consecutive
-groups $G_1,\ldots,G_t$ of $h$ items each. For each $j=2,\ldots,t$,
-round every item of $G_j$ up to $\min G_{j-1}$, the smallest size in
-the preceding group, and let $J$ be the multiset of rounded items. The
-first group $G_1$ has no predecessor, so it is not rounded; its items
+groups $G_1,\ldots,G_t$ of $h$ items each. If $h\ge1$, for each
+$j=2,\ldots,t$, round every item of $G_j$ up to $\min G_{j-1}$,
+the smallest size in the preceding group. Denote the resulting
+rounded group by $G'_j$, and define $G'_j=\{\min G_{j-1}\times h\},\, J=\biguplus_{j=2}^{t}G'_j,$
+where $\biguplus$ denotes multiset union. The first group $G_1$
+has no predecessor, so it is not rounded; its items
 are packed separately, one per bin. If $h=0$, set $R=L$ and
 $J=\varnothing$.
 
@@ -366,21 +363,24 @@ Suppose $h\ge1$. Then
   J\preceq L,\qquad m(J)\le t-1,\qquad
   \min J\ge\delta,\qquad h\le\delta\OPT(I).
 \]
-Moreover, every original item of $G_j$ fits in the slot of its rounded
-copy.
+Moreover, for $j=2,\ldots,t$, every original item of $G_j$ fits in
+the slot of its rounded copy in $G'_j$.
 \end{lemma}
 
 \begin{proof}
-Since $L$ is listed in non-increasing order, every item of $G_{j-1}$ is
-at least $\min G_{j-1}$, and every item of $G_j$ is at most
-$\min G_{j-1}$. The second fact shows that each original fits in its
-rounded slot. For the first, match the $h$ rounded items of $G_j$ to
-the $h$ original items of $G_{j-1}$, for $j=2,\ldots,t$. The
-predecessor groups $G_1,\ldots,G_{t-1}$ are disjoint, so the matching
-is injective and $J\preceq L$ in the partial order of
-\Cref{subsec:instance-partial-order}.
+For each $j=2,\ldots,t$, every item of $G'_j$ has size
+$\min G_{j-1}$. Since $L$ is listed in non-increasing order,
+every original item of $G_j$ has size at most $\min G_{j-1}$,
+so it fits in the slot of its rounded copy in $G'_j$.
 
-Each rounded group contributes the single size $\min G_{j-1}$, so
+To prove $J\preceq L$, match the $h$ items of each $G'_j$
+one-to-one with the $h$ items of $G_{j-1}$. Every target item
+has size at least $\min G_{j-1}$, so $G'_j\preceq G_{j-1}$.
+The target groups $G_1,\ldots,G_{t-1}$ contain distinct item copies.
+Thus, combining these matchings gives an injective mapping from
+$J=\biguplus_{j=2}^{t}G'_j$ into $L$, proving $J\preceq L$.
+
+Each rounded group $G'_j$ contributes the single size $\min G_{j-1}$, so
 $m(J)\le t-1$. Rounding only increases sizes, so every size in $J$ is
 at least $\delta$.
 
@@ -398,37 +398,43 @@ most $t-1$ distinct sizes, each at least $\delta$
 
 \smallskip
 \noindent\textbf{Worked grouping.}
-Suppose $h=2$ and three consecutive groups are
+Suppose $h=2$ and the first three groups are
 \[
   G_1=\{0.60,0.54\},\qquad G_2=\{0.49,0.46\},\qquad
   G_3=\{0.41,0.39\}.
 \]
-The items of $G_2$ round up to $0.54$ and those of $G_3$ round up to
-$0.46$, so $J=\{0.54\times2,0.46\times2\}$, while $G_1$ is packed in
+The rounded groups are $G'_2=\{0.54\times2\}$ and
+$G'_3=\{0.46\times2\}$. These groups contribute
+$G'_2\uplus G'_3=\{0.54\times2,0.46\times2\}$ to $J$, while $G_1$ is packed in
 two separate bins. A bin with one $0.54$ slot and one $0.46$ slot can
 hold, for example, the original items $0.49$ and $0.41$.
+\Cref{fig:linear-grouping} in \Cref{app:linear-grouping}
+illustrates the rounding and the matching to predecessor slots.
 
 \subsection{Packing and reinserting small items}
 \label{subsec:dlvl-packing}
 
 \smallskip
 \noindent\textbf{Packing the large items.}
-Solve the LP relaxation of \Cref{subsubsec:bp-lp} on $J$ and take an
-optimal basic feasible solution $\mathbf{a}^*$. Round up each
-configuration count, then apply the greedy deflation of
-\Cref{app:greedy-deflation} to remove excess slots. Fill every slot
+Solve the configuration LP relaxation on $J$ and take an optimal
+basic feasible solution $\mathbf{a}^*$. Choosing a vertex solution
+ensures that rounding adds at most $m(J)$ bins, rather than the
+general bound of $q$ for an arbitrary optimal LP solution, where
+$q$ is the number of configurations of $J$.
+Following the de la Vega--Lueker
+approach in \Cref{subsubsec:bp-lp}, round up each configuration count
+and apply greedy deflation to remove excess slots. Fill every slot
 with the original item of its rounded copy. Pack each item of $G_1$
 and of $R$ in a separate bin, omitting $G_1$ when $h=0$. Let $B_0$ be
 the number of bins used at this point.
 
 \smallskip
 \noindent\textbf{Reinserting the small items.}
-Process the items of $S$ in their input order, keeping a pointer to a
-current bin that starts at the first bin. If the next item fits in the
-current bin, place it there. Otherwise, advance the pointer until the
-item fits or the scan passes the last bin; in the latter case, open a
-new bin and place the item there. The pointer never moves backward.
-See \Cref{alg:dlvl} in \Cref{app:dlvl} for the pseudocode.
+Use a Next-Fit-style scan of the existing bins, starting at the first
+bin. Process $S$ in input order, advancing the pointer only when an
+item does not fit and opening a new bin only after passing the last
+bin. The pointer never moves backward.
+See \Cref{alg:dlvl} in \Cref{app:dlvl} for the detailed pseudocode.
 
 \begin{claim}[Packing the large items]\label{clm:dlvl-large}
 The bin count before reinsertion satisfies
@@ -442,17 +448,20 @@ If $h=0$, the LP packing is empty and all large items lie in $R$, so
 $B_0=r\le t-1$. Assume $h\ge1$.
 
 \smallskip\noindent\textit{LP part.}
-By \Cref{lem:lp_nonzero_variables}, an optimal basic feasible solution
-for $J$ has at most $m(J)$ positive configuration counts. Rounding up
-each positive count adds less than one bin, and deflation never
-increases the bin count. The packing of $J$ therefore uses at most
-$\LIN(J)+m(J)\le\OPT(J)+m(J)$ bins. By \Cref{lem:dlvl-grouping},
+By \Cref{lem:lp_nonzero_variables}, the optimal basic feasible solution
+$\mathbf{a}^*$ for $J$ has at most $m(J)$ positive entries $a_j^*$.
+Rounding up each positive entry adds less than one bin, while zero
+entries stay zero. Thus, \mbox{$\textstyle\sum_j\lceil a_j^*\rceil\le\sum_j a_j^*+m(J)=\LIN(J)+m(J)\le\OPT(J)+m(J)$}.
+Deflation never increases the bin count. By \Cref{lem:dlvl-grouping},
 replacing each rounded item with its original keeps every bin feasible.
 
 \smallskip\noindent\textit{Separate part.}
-The items of $G_1$ and $R$ use $h+r$ bins.
+The first group $G_1$ contains $h$ items, and the remainder $R$
+contains $r$ items. Packing each of these items in its own bin
+uses $h+r$ bins.
 
 \smallskip\noindent\textit{Combine.}
+Together, these give \mbox{$\textstyle B_0\le\sum_j\lceil a_j^*\rceil+h+r$}.
 Using $\OPT(J)\le\OPT(I)$, $m(J)\le t-1$, $h\le\delta\OPT(I)$ and
 $r\le t-1$,
 \[
@@ -502,8 +511,10 @@ copy, which it fits by \Cref{lem:dlvl-grouping}. Every small item is
 placed only in a bin where it fits.
 
 \smallskip\noindent\textbf{Approximation guarantee.}
-Both $1+\delta$ and $1/(1-\delta)$ are at most
-$(1+\delta)/(1-\delta)=1+\varepsilon$, and $t\ge2$ since $\delta<1$.
+Since $\delta=\varepsilon/(\varepsilon+2)$, we directly have
+$1+\delta\le1+\varepsilon$ and
+$1/(1-\delta)=1+\varepsilon/2\le1+\varepsilon$.
+Also, $t\ge2$ since $\delta<1$.
 If reinsertion uses only the initial bins, then $B=B_0$, and
 \Cref{clm:dlvl-large} gives $B\le(1+\varepsilon)\OPT(I)+2(t-1)$.
 If reinsertion opens a new bin, \Cref{clm:dlvl-small} and
@@ -515,38 +526,37 @@ Since $1/\delta=1+2/\varepsilon$, we have
 $t=\lceil(1+2/\varepsilon)^2\rceil$. For $0<\varepsilon\le1$,
 $\delta\ge\varepsilon/3$, so $t\le9\varepsilon^{-2}+1$ and the additive
 term is $O(\varepsilon^{-2})$. For fixed $\varepsilon$, its
-contribution to $\ALG(I)/\OPT(I)$ tends to zero as $\OPT(I)$ grows, so
-the algorithm is an APTAS.
+contribution to $\ALG(I)/\OPT(I)$ tends to zero as $\OPT(I)$ grows,
+giving an asymptotic approximation ratio of at most $1+\varepsilon$.
 
 \smallskip\noindent\textbf{Running time.}
-Separating the small items takes $O(n)$ time. The grouping needs only
-the group boundaries, at ranks $r,r+h,\ldots,r+(t-1)h$ in
-non-increasing order, and the minimum of each group. To find them,
-select the item at the median requested rank in linear time, partition
-around it, and recurse on the requested ranks on each side, resolving
-ties by input position. At each recursion level the sublists are
-disjoint, and each subproblem holds at most half of the preceding
-requested ranks. With at most $t$ boundaries, grouping takes
-$O(n\log t)=O(n\log(1/\varepsilon))$ time.
+Separating the small items takes $O(n)$ time. Full sorting is
+unnecessary: items within each group may remain unordered. To find
+the boundaries at ranks $r,r+h,\ldots,r+(t-1)h$ (omitting rank zero),
+use Quickselect with median-of-medians pivots for worst-case
+linear-time selection of the middle requested boundary, partition, and recurse on each side,
+breaking ties by input position. Each level costs $O(n)$ over disjoint
+sublists, and each subproblem retains at most half the requested
+boundaries, giving $O(\log t)$ levels. Scanning for all group minima
+takes $O(n)$, so grouping takes $O(n\log t)$ time.
 
 In $J$, each configuration contains at most $k=\lfloor1/\delta\rfloor$
 items, and there are at most $t-1$ distinct sizes. By
 \Cref{lem:bounded-config}, the number of non-empty configurations is
-at most $q\le\binom{k+t-1}{t-1}-1$. Both $q$ and the number of LP
-constraints depend only on $\varepsilon$. Enumerating configurations,
+at most $q\le\binom{k+t-1}{t-1}-1$. Both the number of configurations
+and the number of LP constraints are bounded by functions of
+$\varepsilon$ alone. Enumerating configurations,
 solving the LP (for example, by enumerating candidate bases and solving
 linear systems of bounded dimension) and batch deflation therefore take
 at most $C_\varepsilon$ arithmetic operations. Filling the slots takes
 $O(n)$ time. Reinsertion also takes $O(n)$ time, because each small
 item is placed once and the pointer passes each bin at most once. The
 total is $C_\varepsilon+O(n\log t)$, which is linear in $n$ for fixed
-$\varepsilon$.
+$\varepsilon$. Together with the guarantee above, this meets the
+definition of an APTAS: polynomial running time for each fixed
+$\varepsilon>0$ and an asymptotic approximation ratio of at most
+$1+\varepsilon$.
 \end{proof}
-
-The constant $C_\varepsilon$ is very large: with $k\approx\delta^{-1}$
-and $t\approx\delta^{-2}$, the number of configurations is at least
-$((t-1)/k)^k\approx\delta^{-1/\delta}$, which is not polynomial in
-$1/\varepsilon$. 
 
 \section{Karmarkar--Karp Algorithm}
 \label{sec:kk}
@@ -849,12 +859,15 @@ capacities give $O(T(\lceil n/2\rceil,n)+n\log n)$ total time.
 \input{appendix/de_la_vega_lueker}
 \input{appendix/karmarkar_karp}
 \clearpage
+\input{appendix/linear_grouping_illustration}
+\clearpage
 \input{appendix/geometric_grouping_illustration}
 % ============================================================
 % AI Disclosure (outside the 10-page limit)
 % ============================================================
 \section*{AI Disclosure}
 
+\newpage
 \input{contents/ai_disclosure}
 
 \end{document}

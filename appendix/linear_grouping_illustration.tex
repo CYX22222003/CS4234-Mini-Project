@@ -1,0 +1,110 @@
+\section{Illustration of Linear Grouping}
+\label{app:linear-grouping}
+
+\Cref{fig:linear-grouping} illustrates \Cref{lem:dlvl-grouping}
+with $\delta=1/2$, $t=4$, and $N=9$, so $h=2$ and $r=1$.
+After setting aside the largest item as $R$, the remaining items
+form four consecutive groups of two items each.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        x=1.05cm, y=1cm,
+        original/.style={black!80, line width=0.7pt},
+        excluded/.style={black!45, densely dashed, line width=0.7pt},
+        rounded/.style={blue!55!black, line width=1pt},
+        matching/.style={black!55, densely dotted, line width=0.5pt},
+        group brace/.style={decorate, decoration={brace, amplitude=4pt}},
+        every node/.style={font=\small}
+    ]
+        % Both panels use the same item-size scale.
+        \foreach \base/\instance in {6/L,0/J} {
+            \draw[black!55] (0,\base) -- (12.9,\base);
+            \draw[black!55] (0,\base) -- (0,{\base+3.4});
+            \foreach \tick in {0,0.2,0.4,0.6,0.8,1} {
+                \draw[black!55] (0,{\base+3.4*\tick})
+                    -- (0.15,{\base+3.4*\tick});
+                \node[anchor=east, font=\footnotesize]
+                    at (-0.12,{\base+3.4*\tick}) {$\tick$};
+            }
+            \node at (-0.8,{\base+1.7}) {$\instance$};
+        }
+
+        % Original items in G_2, G_3, and G_4.
+        \foreach \x/\size in {
+            5/0.82,6/0.76,7.8/0.70,8.8/0.64,10.6/0.58,11.6/0.52
+        } {
+            \draw[original] (\x,6) -- (\x,{6+3.4*\size});
+        }
+
+        % R and G_1 are packed separately, one item per bin.
+        \foreach \x/\size in {1/0.98,2.2/0.94,3.2/0.88} {
+            \draw[excluded] (\x,6) -- (\x,{6+3.4*\size});
+            \node[font=\scriptsize, inner sep=0pt, text=black!55]
+                at (\x,{6+3.4*\size}) {$\times$};
+        }
+        \draw[group brace] (0.75,9.65) -- (1.25,9.65)
+            node[midway, above=7pt] {$R$};
+        \foreach \left/\right/\height/\index in {
+            2.2/3.2/9.5/1,5/6/9.08/2,
+            7.8/8.8/8.67/3,10.6/11.6/8.26/4
+        } {
+            \draw[group brace] (\left,\height) -- (\right,\height)
+                node[midway, above=7pt, align=center]
+                {$G_{\index}$\\$h=2$};
+        }
+
+        % Each rounded copy stays directly beneath its original.
+        % Its height is the minimum size in the preceding group.
+        \foreach \x/\size in {
+            5/0.88,6/0.88,7.8/0.76,8.8/0.76,10.6/0.64,11.6/0.64
+        } {
+            \draw[rounded] (\x,0) -- (\x,{3.4*\size});
+        }
+
+        % Match G'_j to distinct copies in G_{j-1}.
+        % Dotted lines show domination, not which item was rounded.
+        \foreach \slot/\item/\size in {
+            2.2/5/0.88,3.2/6/0.88,
+            5/7.8/0.76,6/8.8/0.76,
+            7.8/10.6/0.64,8.8/11.6/0.64
+        } {
+            \draw[matching] (\slot,5.88) -- (\item,{3.4*\size});
+        }
+        \node[align=left, anchor=west, font=\footnotesize]
+            at (10.2,5.25) {Matching to\\predecessor slots};
+
+        \foreach \left/\right/\index/\size in {
+            5/6/2/0.88,7.8/8.8/3/0.76,10.6/11.6/4/0.64
+        } {
+            \draw[group brace] (\right,-0.18) -- (\left,-0.18)
+                node[midway, below=7pt, align=center, font=\footnotesize]
+                {$G'_{\index}$\\$2\times\size$};
+        }
+
+        \draw[excluded] (1,-1.85) -- (1.6,-1.85);
+        \node[font=\scriptsize, inner sep=0pt, text=black!55]
+            at (1.6,-1.85) {$\times$};
+        \node[anchor=west, font=\footnotesize] at (1.75,-1.85)
+            {Original items in $R\uplus G_1$};
+        \draw[rounded] (7.2,-1.85) -- (7.8,-1.85);
+        \node[anchor=west, font=\footnotesize] at (7.95,-1.85)
+            {Rounded items in $J$};
+    \end{tikzpicture}
+    \caption{Before and after linear grouping. Each vertical line
+    represents one item on a common size scale. For $j=2,3,4$,
+    round every item of $G_j$ up to $\min G_{j-1}$ to form $G'_j$,
+    keeping each copy directly beneath its original. Dotted lines
+    match the items of $G'_j$ to distinct slots in $G_{j-1}$;
+    they illustrate $J\preceq L$, rather than the rounding operation.}
+    \label{fig:linear-grouping}
+\end{figure}
+
+Here $J=G'_2\uplus G'_3\uplus G'_4
+=\{0.88\times2,\;0.76\times2,\;0.64\times2\}$.
+For example, the items $0.82$ and $0.76$ in $G_2$ round up to
+two copies of $0.88$ in $G'_2$. These copies can be matched to
+the distinct items $0.94$ and $0.88$ in $G_1$.
+The three predecessor groups are disjoint, so the combined
+matching is injective. The items in $R\uplus G_1$ are packed
+separately, one per bin.

@@ -82,9 +82,13 @@ Hence, the number of arrangements is
 Exactly one arrangement corresponds to the empty
 configuration, with $c_1=\cdots=c_m=0$ and $c_R=k$.
 Excluding it leaves $\binom{k+m}{m}-1$ possible
-non-empty item-count vectors. Some of these may
-violate the bin-capacity constraint or require more
-items of a given size than are available. Every feasible
-configuration is nevertheless counted, so
+non-empty item-count vectors. A feasible configuration
+must also satisfy the bin-capacity constraint
+\[
+    \sum_{j=1}^{m}c_jy_j\leq1.
+\]
+Some of these item-count vectors may violate the
+bin-capacity constraint. Every feasible configuration
+is nevertheless counted, so
 $q\leq\binom{k+m}{m}-1$.
 \end{proof}

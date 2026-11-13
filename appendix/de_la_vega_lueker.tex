@@ -12,7 +12,7 @@ $h\gets\lfloor|L|/t\rfloor$\;
   $R\gets L$,\ $J\gets\varnothing$\;
 }{
   Select the group boundaries of $L$ in non-increasing order,
-  giving $R,G_1,\ldots,G_t$\;
+  giving $R,G_1,\ldots,G_t$, and set $J\gets\varnothing$\;
   \For{$j=2,\ldots,t$}{
     Round every item of $G_j$ up to $\min G_{j-1}$ and add it to $J$,
     recording its original\;
